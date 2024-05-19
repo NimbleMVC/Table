@@ -1,0 +1,58 @@
+<?php
+    /** @var $this \Nimblephp\table\Table */
+    /** @var $column \Nimblephp\table\Column */
+?>
+
+<div id="<?= $this->getId() ?>" style="margin: 10px;">
+    <div class="table-header" style="position: relative;">
+        <?php if ($this->ajax): ?>
+            <div>
+                <form onsubmit="handleSubmit()">
+                    <input type="search" name="search" placeholder="Search..." aria-label="Search" value="<?= $this->getSearch() ?>">
+                </form>
+            </div>
+        <?php endif; ?>
+    </div>
+    <table border="1" style="width: 100%; border-collapse: collapse;">
+        <thead>
+        <tr style="background: #333; color: white; font-weight: bold;">
+            <?php foreach($this->columns as $column): ?>
+                <th style="padding: 3px;"><?= $column->getName() ?></th>
+            <?php endforeach; ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach($this->getData() as $data): ?>
+            <tr>
+                <?php foreach($this->columns as $column): ?>
+                    <td style="padding: 3px;"><?= $this->prepareColumnValue($column, $data) ?></td>
+                <?php endforeach; ?>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+    <div class="table-footer" style="position: relative;">
+        <?php if ($this->ajax && $this->getPageCount() > 1): ?>
+            <div style="position: relative; float: right; padding-top: 10px;">
+                <div class="table-footer-pagination">
+                    <?php if ($this->getPage() > 1): ?>
+                        <a href="?page=<?= $this->getPage() - 1 ?>">&laquo;</a>
+                    <?php endif; ?>
+
+                    <?php
+                        $start = max(1, $this->getPage() - 3);
+                        $end = min($this->getPageCount(), $this->getPage() + 3);
+
+                        for ($i = $start; $i <= $end; $i++):
+                    ?>
+                        <a href="?page=<?= $i ?>" <?= ($i === $this->getPage()) ? 'class="active"' : '' ?>><?= $i ?></a>
+                    <?php endfor; ?>
+
+                    <?php if ($this->getPage() < $this->getPageCount()): ?>
+                        <a href="?page=<?= $this->getPage() + 1 ?>">&raquo;</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
