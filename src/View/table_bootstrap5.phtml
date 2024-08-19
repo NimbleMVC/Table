@@ -4,11 +4,11 @@
 ?>
 
 <div id="<?= $this->getId() ?>" class="m-2">
-    <div class="table-header row">
+    <div class="table-header row position-relative">
         <?php if ($this->ajax): ?>
-            <div class="col">
+            <div class="col position-absolute bottom-0 pb-1">
                 <?php foreach ($this->actions as $action): ?>
-                    <a href="<?= $action['url'] ?>" class="btn btn-primary"><?= $action['name'] ?></a>
+                    <a href="<?= $action['url'] ?>" class="btn btn-primary <?= $action['class'] ?>"><?= $action['name'] ?></a>
                 <?php endforeach ?>
             </div>
             <div class="col d-flex justify-content-end">
