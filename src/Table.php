@@ -90,6 +90,12 @@ class Table implements TableInterface
     protected int $dataCount = 0;
 
     /**
+     * Group by
+     * @var ?string
+     */
+    protected ?string $groupBy = null;
+
+    /**
      * Request instance
      * @var Request
      */
@@ -124,6 +130,13 @@ class Table implements TableInterface
      * @var array
      */
     protected array $actions = [];
+
+
+    /**
+     * Order by
+     * @var ?string
+     */
+    protected ?string $orderBy = null;
 
     /**
      * Initialize
@@ -211,8 +224,9 @@ class Table implements TableInterface
             $this->data = $this->model->readAll(
                 $this->getConditions(),
                 null,
-                null,
-                (($this->getPage() - 1) * $this->getLimit()) . ',' . $this->getLimit()
+                $this->getOrderBy(),
+                (($this->getPage() - 1) * $this->getLimit()) . ',' . $this->getLimit(),
+                $this->getGroupBy()
             );
         }
 
@@ -391,6 +405,25 @@ class Table implements TableInterface
     }
 
     /**
+     * Get group by
+     * @return ?string
+     */
+    public function getGroupBy(): ?string
+    {
+        return $this->groupBy;
+    }
+
+    /**
+     * Set group by
+     * @param ?string $groupBy
+     * @return void
+     */
+    public function setGroupBy(?string $groupBy): void
+    {
+        $this->groupBy = $groupBy;
+    }
+
+    /**
      * Get search
      * @return string
      */
@@ -412,16 +445,39 @@ class Table implements TableInterface
     }
 
     /**
+     * Get order by
+     * @return ?string
+     */
+    public function getOrderBy(): ?string
+    {
+        return $this->orderBy;
+    }
+
+    /**
+     * Set order by
+     * @param string $orderBy
+     * @return $this
+     */
+    public function setOrderBy(string $orderBy): self
+    {
+        $this->orderBy = $orderBy;
+
+        return $this;
+    }
+
+    /**
      * Add action
      * @param string $name
      * @param string $url
+     * @param string $class
      * @return $this
      */
-    public function addAction(string $name, string $url): self
+    public function addAction(string $name, string $url, string $class=''): self
     {
         $this->actions[] = [
             'name' => $name,
-            'url' => $url
+            'url' => $url,
+            'class' => $class
         ];
 
         return $this;
