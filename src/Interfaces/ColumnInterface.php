@@ -53,4 +53,18 @@ interface ColumnInterface
      */
     public function getValue(): mixed;
 
+    /**
+     * Set search in field
+     * @param mixed $search
+     * @return ColumnInterface
+     */
+    public function setSearch(bool $search): ColumnInterface;
+
+    /**
+     * Get search in field
+     * @return mixed
+     */
+    public function getSearch(): mixed;
+
+
 }

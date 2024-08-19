@@ -312,7 +312,9 @@ class Table implements TableInterface
 
             /** @var ColumnInterface $column */
             foreach ($this->columns as $column) {
-                $searchConditions['OR'][] = new Condition($column->getKey(), 'LIKE', '%' . $this->getSearch() . '%');
+                if ($column->getSearch()) {
+                    $searchConditions['OR'][] = new Condition($column->getKey(), 'LIKE', '%' . $this->getSearch() . '%');
+                }
             }
 
             $this->conditions[] = $searchConditions;

@@ -21,6 +21,12 @@ class Column implements ColumnInterface
     protected string $key;
 
     /**
+     * Search in column
+     * @var bool
+     */
+    protected bool $search = true;
+
+    /**
      * Custom value
      * @var mixed
      */
@@ -100,6 +106,27 @@ class Column implements ColumnInterface
     public function getValue(): mixed
     {
         return $this->value;
+    }
+
+    /**
+     * Set search in field
+     * @param mixed $search
+     * @return ColumnInterface
+     */
+    public function setSearch(bool $search): ColumnInterface
+    {
+        $this->search = $search;
+
+        return $this;
+    }
+
+    /**
+     * Get search in field
+     * @return mixed
+     */
+    public function getSearch(): mixed
+    {
+        return $this->search;
     }
 
 }
