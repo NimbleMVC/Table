@@ -16,6 +16,12 @@
                     <input class="form-control me-2" type="search" name="search" placeholder="Search..." aria-label="Search" value="<?= $this->getSearch() ?>">
                 </form>
             </div>
+        <?php else: ?>
+            <div class="col d-flex bottom-0 pb-1">
+                <?php foreach ($this->actions as $action): ?>
+                    <a href="<?= $action['url'] ?>" class="btn btn-primary <?= $action['class'] ?> me-2"><?= $action['name'] ?></a>
+                <?php endforeach ?>
+            </div>
         <?php endif; ?>
     </div>
     <table class="table table-striped m-0">
