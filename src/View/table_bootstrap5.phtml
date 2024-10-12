@@ -3,7 +3,7 @@
 /** @var $column \Nimblephp\table\Column */
 ?>
 
-<div id="<?= $this->getId() ?>" class="m-2">
+<div id="<?= $this->getId() ?>" class="m-2<?= $this->ajaxForm ? ' ajax-form' : '' ?>"<?= $this->ajaxForm ? (' data-ajaxform="' . count($this->data ?? []) . '"') : '' ?>>
     <div class="table-header row position-relative">
         <?php if ($this->ajax): ?>
             <div class="col position-absolute bottom-0 pb-1">
@@ -22,7 +22,7 @@
         <thead>
         <tr>
             <?php foreach($this->columns as $column): ?>
-                <th scope="col"><?= $column->getName() ?></th>
+                <th scope="col" <?= $this->ajaxForm ? ('data-key="' . $column->getKey() . '"') : '' ?>><?= $column->getName() ?></th>
             <?php endforeach; ?>
         </tr>
         </thead>
@@ -37,6 +37,9 @@
         </tbody>
     </table>
     <div class="table-footer p-1">
+        <?php if ($this->ajaxForm): ?>
+            <a class="btn btn-sm btn-primary ajax-form-add">Dodaj wpis</a>
+        <?php endif ?>
         <?php if ($this->ajax && $this->getPageCount() > 1): ?>
             <div>
                 <nav class="table-footer-pagination">
@@ -46,10 +49,10 @@
                         <?php endif; ?>
 
                         <?php
-                            $start = max(1, $this->getPage() - 3);
-                            $end = min($this->getPageCount(), $this->getPage() + 3);
+                        $start = max(1, $this->getPage() - 3);
+                        $end = min($this->getPageCount(), $this->getPage() + 3);
 
-                            for ($i = $start; $i <= $end; $i++): ?>
+                        for ($i = $start; $i <= $end; $i++): ?>
                             <li class="page-item <?= ($i === $this->getPage()) ? 'active' : '' ?>"><a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a></li>
                         <?php endfor; ?>
 

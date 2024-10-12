@@ -1,9 +1,9 @@
 <?php
-    /** @var $this \Nimblephp\table\Table */
-    /** @var $column \Nimblephp\table\Column */
+/** @var $this \Nimblephp\table\Table */
+/** @var $column \Nimblephp\table\Column */
 ?>
 
-<div id="<?= $this->getId() ?>" style="margin: 10px;">
+<div id="<?= $this->getId() ?>" class="<?= $this->ajaxForm ? ' ajax-form' : '' ?>" style="margin: 10px;">
     <div class="table-header" style="position: relative;">
         <?php if ($this->ajax): ?>
             <div>
@@ -25,7 +25,7 @@
         <?php foreach($this->getData() as $data): ?>
             <tr>
                 <?php foreach($this->columns as $column): ?>
-                    <td style="padding: 3px;"><?= $this->prepareColumnValue($column, $data) ?></td>
+                    <td style="padding: 3px;" <?= $this->ajaxForm ? ('data-key="' . $column->getKey() . '"') : '' ?>><?= $this->prepareColumnValue($column, $data) ?></td>
                 <?php endforeach; ?>
             </tr>
         <?php endforeach; ?>
@@ -40,11 +40,11 @@
                     <?php endif; ?>
 
                     <?php
-                        $start = max(1, $this->getPage() - 3);
-                        $end = min($this->getPageCount(), $this->getPage() + 3);
+                    $start = max(1, $this->getPage() - 3);
+                    $end = min($this->getPageCount(), $this->getPage() + 3);
 
-                        for ($i = $start; $i <= $end; $i++):
-                    ?>
+                    for ($i = $start; $i <= $end; $i++):
+                        ?>
                         <a href="?page=<?= $i ?>" <?= ($i === $this->getPage()) ? 'class="active"' : '' ?>><?= $i ?></a>
                     <?php endfor; ?>
 

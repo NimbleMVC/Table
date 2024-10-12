@@ -66,6 +66,12 @@ class Table implements TableInterface
     protected bool $ajax = false;
 
     /**
+     * Form ajax table
+     * @var bool
+     */
+    protected bool $ajaxForm = false;
+
+    /**
      * Limit
      * @var int
      */
@@ -484,6 +490,16 @@ class Table implements TableInterface
     }
 
     /**
+     * Set ajax form
+     * @param bool $ajaxForm
+     * @return void
+     */
+    public function setAjaxForm(bool $ajaxForm = true)
+    {
+        $this->ajaxForm = $ajaxForm;
+    }
+
+    /**
      * Count data
      * @return void
      * @throws DatabaseException
@@ -495,7 +511,7 @@ class Table implements TableInterface
                 $this->getConditions()
             );
         } else {
-            $this->dataCount = count($this->data);
+            $this->dataCount = count($this->data ?? []);
         }
 
         $this->setPageCount(ceil($this->dataCount / $this->getLimit()));
