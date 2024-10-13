@@ -234,6 +234,8 @@ class Table implements TableInterface
                 (($this->getPage() - 1) * $this->getLimit()) . ',' . $this->getLimit(),
                 $this->getGroupBy()
             );
+        } elseif ($this->data === null && $this->ajaxForm && isset($_POST['__' . $this->getId()])) {
+            $this->data = $_POST['__' . $this->getId()];
         }
 
         return $this->data ?? [];
@@ -249,6 +251,24 @@ class Table implements TableInterface
         ob_start();
 
         $this->prepareDataCount();
+
+        if ($this->ajaxForm) {
+            $this->addColumn(
+                Column::create('action')
+                    ->setName('')
+                    ->setAjax(false)
+                    ->setValue(function (Cell $cell) {
+                        $value = '';
+
+                        if (Table::$layout === 'bootstrap5') {
+                            $value .= '<a href="#" class="ajax-form-delete btn btn-sm btn-danger mt-1">X</a>';
+                        }
+
+                        return $value;
+                    })
+            );
+        }
+
         include($this->viewPath);
 
         return ob_get_clean();

@@ -66,5 +66,18 @@ interface ColumnInterface
      */
     public function getSearch(): mixed;
 
+    /**
+     * Is ajax table
+     * @return bool
+     */
+    public function isAjax(): bool;
+
+    /**
+     * Set ajax
+     * @param bool $ajax
+     * @return ColumnInterface
+     */
+    public function setAjax(bool $ajax): ColumnInterface;
+
 
 }

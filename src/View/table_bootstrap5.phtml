@@ -1,9 +1,11 @@
 <?php
 /** @var $this \Nimblephp\table\Table */
 /** @var $column \Nimblephp\table\Column */
+
+$ajaxFormId = 0;
 ?>
 
-<div id="<?= $this->getId() ?>" class="m-2<?= $this->ajaxForm ? ' ajax-form' : '' ?>"<?= $this->ajaxForm ? (' data-ajaxform="' . count($this->data ?? []) . '"') : '' ?>>
+<div id="<?= $this->getId() ?>" class="m-2<?= $this->ajaxForm ? ' ajax-form' : '' ?>"<?= $this->ajaxForm ? (' data-count="' . count($this->getData()) . '"') : '' ?>>
     <div class="table-header row position-relative">
         <?php if ($this->ajax): ?>
             <div class="col position-absolute bottom-0 pb-1">
@@ -35,9 +37,21 @@
         <tbody>
         <?php foreach($this->getData() as $data): ?>
             <tr>
-                <?php foreach($this->columns as $column): ?>
-                    <td><?= $this->prepareColumnValue($column, $data) ?></td>
+                <?php foreach($this->columns as $id => $column): ?>
+                    <?php if ($this->ajaxForm && $column->isAjax()): ?>
+                        <td>
+                            <input
+                                    value="<?= $this->prepareColumnValue($column, $data) ?>"
+                                    name="__<?= $this->getId() ?>[<?= $ajaxFormId ?>]<?= '[' . implode('][', explode('.', $column->getKey())) . ']' ?>"
+                                    type="input"
+                                    class="form-control"
+                            >
+                        </td>
+                    <?php else: ?>
+                        <td><?= $this->prepareColumnValue($column, $data) ?></td>
+                    <?php endif ?>
                 <?php endforeach; ?>
+                <?php $ajaxFormId++ ?>
             </tr>
         <?php endforeach; ?>
         </tbody>

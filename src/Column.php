@@ -33,6 +33,12 @@ class Column implements ColumnInterface
     protected mixed $value = null;
 
     /**
+     * Is ajax column
+     * @var bool
+     */
+    protected bool $isAjax = true;
+
+    /**
      * Create column
      * @param string $key
      * @return ColumnInterface
@@ -127,6 +133,27 @@ class Column implements ColumnInterface
     public function getSearch(): mixed
     {
         return $this->search;
+    }
+
+    /**
+     * Is ajax column
+     * @return bool
+     */
+    public function isAjax(): bool
+    {
+        return $this->isAjax;
+    }
+
+    /**
+     * Set ajax
+     * @param bool $ajax
+     * @return ColumnInterface
+     */
+    public function setAjax(bool $ajax): ColumnInterface
+    {
+        $this->isAjax = $ajax;
+
+        return $this;
     }
 
 }
