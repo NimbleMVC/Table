@@ -137,4 +137,17 @@ interface TableInterface
      */
     public function queryConfig(): void;
 
+    /**
+     * Set additional table class
+     * @param string $class
+     * @return void
+     */
+    public function setClass(string $class = '');
+
+    /**
+     * Get additional table class
+     * @return string
+     */
+    public function getClass(): string;
+
 }
