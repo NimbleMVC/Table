@@ -17,7 +17,7 @@
         <thead>
         <tr style="background: #333; color: white; font-weight: bold;">
             <?php foreach($this->columns as $column): ?>
-                <th style="padding: 3px;"><?= $column->getName() ?></th>
+                <th style="padding: 3px; <?= $column->getStyleAsString() ?>"><?= $column->getName() ?></th>
             <?php endforeach; ?>
         </tr>
         </thead>
@@ -25,7 +25,7 @@
         <?php foreach($this->getData() as $data): ?>
             <tr>
                 <?php foreach($this->columns as $column): ?>
-                    <td style="padding: 3px;"><?= $this->prepareColumnValue($column, $data) ?></td>
+                    <td style="padding: 3px; <?= $column->getStyleAsString() ?>"><?= $this->prepareColumnValue($column, $data) ?></td>
                 <?php endforeach; ?>
             </tr>
         <?php endforeach; ?>

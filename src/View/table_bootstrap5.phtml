@@ -28,7 +28,7 @@
         <thead>
         <tr>
             <?php foreach($this->columns as $column): ?>
-                <th scope="col"><?= $column->getName() ?></th>
+                <th scope="col" style="<?= $column->getStyleAsString() ?>"><?= $column->getName() ?></th>
             <?php endforeach; ?>
         </tr>
         </thead>
@@ -36,7 +36,7 @@
         <?php foreach($this->getData() as $data): ?>
             <tr>
                 <?php foreach($this->columns as $column): ?>
-                    <td><?= $this->prepareColumnValue($column, $data) ?></td>
+                    <td style="<?= $column->getStyleAsString() ?>"><?= $this->prepareColumnValue($column, $data) ?></td>
                 <?php endforeach; ?>
             </tr>
         <?php endforeach; ?>
