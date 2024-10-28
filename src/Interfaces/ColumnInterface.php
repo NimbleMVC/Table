@@ -66,5 +66,24 @@ interface ColumnInterface
      */
     public function getSearch(): mixed;
 
+    /**
+     * Set style
+     * @param array $styles
+     * @return ColumnInterface
+     */
+    public function setStyle(array $styles): ColumnInterface;
+
+    /**
+     * Get style
+     * @return array
+     */
+    public function getStyle(): array;
+
+    /**
+     * Get style as string
+     * @return string
+     */
+    public function getStyleAsString(): string;
+
 
 }

@@ -33,6 +33,12 @@ class Column implements ColumnInterface
     protected mixed $value = null;
 
     /**
+     * Styles
+     * @var array
+     */
+    protected array $style = [];
+
+    /**
      * Create column
      * @param string $key
      * @return ColumnInterface
@@ -127,6 +133,42 @@ class Column implements ColumnInterface
     public function getSearch(): mixed
     {
         return $this->search;
+    }
+
+    /**
+     * Set styles
+     * @param array $styles
+     * @return ColumnInterface
+     */
+    public function setStyle(array $styles = []): ColumnInterface
+    {
+        $this->style = $styles;
+
+        return $this;
+    }
+
+    /**
+     * Set style
+     * @return array
+     */
+    public function getStyle(): array
+    {
+        return $this->style;
+    }
+
+    /**
+     * Get style as string
+     * @return string
+     */
+    public function getStyleAsString(): string
+    {
+        return implode('; ', array_map(
+                function ($key, $value) {
+                    return "$key: $value";
+                },
+                array_keys($this->getStyle()),
+                $this->getStyle()
+            )) . ';';
     }
 
 }
