@@ -539,9 +539,19 @@ class Table implements TableInterface
     protected function getDataFromArray(array $data, string $key): ?string
     {
         try {
-            $generatedArray = '["' . implode('"]["', explode('.', $key)) . '"]';
+            foreach (explode('.', $key) as $value) {
+                if (!array_key_exists($value, $data)) {
+                    return null;
+                }
 
-            return @eval('return $data' . $generatedArray . ';');
+                $data = $data[$value];
+            }
+
+            if (!is_array($data)) {
+                return $data;
+            }
+
+            return null;
         } catch (\Throwable) {
             return null;
         }
