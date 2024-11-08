@@ -98,5 +98,10 @@ interface ColumnInterface
      */
     public function getStyleAsString(): string;
 
+    /**
+     * Get ajax inut type
+     * @return string
+     */
+    public function getAjaxInputType(): string;
 
 }

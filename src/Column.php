@@ -198,4 +198,25 @@ class Column implements ColumnInterface
             )) . ';';
     }
 
+    /**
+     * Set ajax input type
+     * @param string $ajaxInputType
+     * @return ColumnInterface
+     */
+    public function setAjaxInputType(string $ajaxInputType): ColumnInterface
+    {
+        $this->ajaxInputType = $ajaxInputType;
+
+        return $this;
+    }
+
+    /**
+     * Get ajax inut type
+     * @return string
+     */
+    public function getAjaxInputType(): string
+    {
+        return $this->ajaxInputType;
+    }
+
 }

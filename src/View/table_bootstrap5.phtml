@@ -43,8 +43,9 @@ $ajaxFormId = 0;
                             <input
                                     value="<?= $this->prepareColumnValue($column, $data) ?>"
                                     name="__<?= $this->getId() ?>[<?= $ajaxFormId ?>]<?= '[' . implode('][', explode('.', $column->getKey())) . ']' ?>"
-                                    type="input"
+                                    type="<?= $column->getAjaxInputType() ?>"
                                     class="form-control"
+                                    step="0.01"
                             >
                         </td>
                     <?php else: ?>
