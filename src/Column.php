@@ -39,6 +39,12 @@ class Column implements ColumnInterface
     protected bool $isAjax = true;
 
     /**
+     * Styles
+     * @var array
+     */
+    protected array $style = [];
+
+    /**
      * Create column
      * @param string $key
      * @return ColumnInterface
@@ -154,6 +160,42 @@ class Column implements ColumnInterface
         $this->isAjax = $ajax;
 
         return $this;
+    }
+
+    /**
+     * Set styles
+     * @param array $styles
+     * @return ColumnInterface
+     */
+    public function setStyle(array $styles = []): ColumnInterface
+    {
+        $this->style = $styles;
+
+        return $this;
+    }
+
+    /**
+     * Set style
+     * @return array
+     */
+    public function getStyle(): array
+    {
+        return $this->style;
+    }
+
+    /**
+     * Get style as string
+     * @return string
+     */
+    public function getStyleAsString(): string
+    {
+        return implode('; ', array_map(
+                function ($key, $value) {
+                    return "$key: $value";
+                },
+                array_keys($this->getStyle()),
+                $this->getStyle()
+            )) . ';';
     }
 
 }

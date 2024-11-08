@@ -26,11 +26,11 @@ $ajaxFormId = 0;
             </div>
         <?php endif; ?>
     </div>
-    <table class="table table-striped m-0">
+    <table class="table table-striped m-0 <?= $this->getClass() ?>">
         <thead>
         <tr>
             <?php foreach($this->columns as $column): ?>
-                <th scope="col" <?= $this->ajaxForm ? ('data-key="' . $column->getKey() . '"') : '' ?>><?= $column->getName() ?></th>
+                <th scope="col" style="<?= $column->getStyleAsString() ?>" <?= $this->ajaxForm ? ('data-key="' . $column->getKey() . '"') : '' ?>><?= $column->getName() ?></th>
             <?php endforeach; ?>
         </tr>
         </thead>
@@ -39,7 +39,7 @@ $ajaxFormId = 0;
             <tr>
                 <?php foreach($this->columns as $id => $column): ?>
                     <?php if ($this->ajaxForm && $column->isAjax()): ?>
-                        <td>
+                        <td style="<?= $column->getStyleAsString() ?>">
                             <input
                                     value="<?= $this->prepareColumnValue($column, $data) ?>"
                                     name="__<?= $this->getId() ?>[<?= $ajaxFormId ?>]<?= '[' . implode('][', explode('.', $column->getKey())) . ']' ?>"

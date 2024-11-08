@@ -145,6 +145,12 @@ class Table implements TableInterface
     protected ?string $orderBy = null;
 
     /**
+     * Additional table class
+     * @var string
+     */
+    protected string $class = '';
+
+    /**
      * Initialize
      */
     public function __construct(?string $id = null)
@@ -517,6 +523,25 @@ class Table implements TableInterface
     public function setAjaxForm(bool $ajaxForm = true)
     {
         $this->ajaxForm = $ajaxForm;
+    }
+
+    /**
+     * Set additional table class
+     * @param string $class
+     * @return void
+     */
+    public function setClass(string $class = '')
+    {
+        $this->class = $class;
+    }
+
+    /**
+     * Get additional table class
+     * @return string
+     */
+    public function getClass(): string
+    {
+        return $this->class;
     }
 
     /**
