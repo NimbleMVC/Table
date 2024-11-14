@@ -18,10 +18,11 @@ class Simple
         'table-thead' => '',
         'table-thead-tr' => '',
         'table-tbody' => '',
-        'action-div' => 'col position-absolute bottom-0 pb-1',
+        'table-header' => 'd-flex justify-content-between mb-2',
+        'action-div' => 'pt-1',
         'action-button' => 'btn btn-primary',
         'action-search-div' => 'col d-flex justify-content-end',
-        'action-search-form' => 'd-flex',
+        'action-search-form' => 'd-flex m-0',
         'action-search-input' => 'form-control me-2',
         'table-footer' => 'p-1 mt-2',
         'table-footer-pagination-ul' => 'justify-content-end m-0'
@@ -40,7 +41,7 @@ class Simple
         return HtmlGenerator::createTag('div')
             ->setContent(
                 HtmlGenerator::createTag('div')
-                    ->setClass(trim('table-header ' . self::$CLASSES['table']))
+                    ->setClass(trim('table-header ' . self::$CLASSES['table-header']))
                     ->setContent($this->renderHeader())
                 . HtmlGenerator::createTag('table')
                     ->setClass(trim(self::$CLASSES['table'] . ' ' . $this->table->getClass()))
@@ -102,9 +103,9 @@ class Simple
                                             ->setClass('page-item')
                                             ->setContent(
                                                 HtmlGenerator::createTag('a')
-                                                ->setClass('page-link ajax-link')
-                                                ->addAttribute('href', '?page=' . $this->table->getPage() - 1)
-                                                ->setContent('&laquo;')
+                                                    ->setClass('page-link ajax-link')
+                                                    ->addAttribute('href', '?page=' . $this->table->getPage() - 1)
+                                                    ->setContent('&laquo;')
                                             )
                                         : '')
                                     . $pages
@@ -173,8 +174,8 @@ class Simple
             ->setClass(trim(self::$CLASSES['table-thead']))
             ->setContent(
                 HtmlGenerator::createTag('tr')
-                ->setClass(trim(self::$CLASSES['table-thead-tr']))
-                ->setContent($headContent)
+                    ->setClass(trim(self::$CLASSES['table-thead-tr']))
+                    ->setContent($headContent)
             );
     }
 
@@ -197,7 +198,7 @@ class Simple
             }
 
             $content .= HtmlGenerator::createTag('div')
-                ->setClass(trim('action-div'))
+                ->setClass(trim('action-div ' . self::$CLASSES['action-div']))
                 ->setContent($actionContent);
 
             $content .= HtmlGenerator::createTag('div')
