@@ -432,7 +432,7 @@ class Table implements TableInterface
                 if (array_key_exists($filterKey, $this->filters)) {
                     /** @var Filter $filter */
                     $filter = $this->filters[$filterKey];
-                    $filter->setValue($value);
+                    $filter->setValue($value ?? '');
                 }
             }
         }
