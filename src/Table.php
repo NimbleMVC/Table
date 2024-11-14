@@ -677,7 +677,7 @@ class Table implements TableInterface
                 $this->getConditions()
             );
         } else {
-            $this->dataCount = count($this->data);
+            $this->dataCount = count($this->data ?? []);
         }
 
         $this->setPageCount(ceil($this->dataCount / $this->getLimit()));
