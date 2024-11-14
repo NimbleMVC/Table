@@ -2,7 +2,11 @@
 
 namespace Nimblephp\table\Interfaces;
 
+use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
+use Nimblephp\framework\Exception\DatabaseException;
+use Nimblephp\framework\Exception\NimbleException;
 use Nimblephp\framework\Interfaces\ModelInterface;
+use Nimblephp\table\Table;
 
 interface TableInterface
 {
@@ -23,6 +27,9 @@ interface TableInterface
     /**
      * Render table
      * @return string
+     * @throws DatabaseException
+     * @throws DatabaseManagerException
+     * @throws NimbleException
      */
     public function render(): string;
 
@@ -149,5 +156,56 @@ interface TableInterface
      * @return string
      */
     public function getClass(): string;
+
+    /**
+     * Get ajax key
+     * @return null|int|string
+     */
+    public function getAjaxKey(): null|int|string;
+
+    /**
+     * Set ajax key
+     * @param int|string|null $ajaxKey
+     */
+    public static function setAjaxKey(null|int|string $ajaxKey): void;
+
+    /**
+     * Set ajax mode
+     * @param bool $ajax
+     * @return Table
+     */
+    public function setAjax(bool $ajax = true): self;
+
+    /**
+     * Is ajax
+     * @return bool
+     */
+    public function isAjax(): bool;
+
+    /**
+     * Get columns
+     * @return array
+     */
+    public function getColumns(): array;
+
+    /**
+     * Get actions
+     * @return array
+     */
+    public function getActions(): array;
+
+    /**
+     * Get ajax config
+     * @return void
+     * @throws DatabaseManagerException
+     */
+    public function getAjaxConfig(): void;
+
+    /**
+     * Save ajax config
+     * @return void
+     * @throws DatabaseManagerException
+     */
+    public function saveAjaxConfig(): void;
 
 }
