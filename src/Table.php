@@ -4,10 +4,12 @@ namespace Nimblephp\table;
 
 use krzysztofzylka\DatabaseManager\Condition;
 use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
+use Nimblephp\debugbar\Debugbar;
 use Nimblephp\framework\Cookie;
 use Nimblephp\framework\Exception\DatabaseException;
 use Nimblephp\framework\Exception\NimbleException;
 use Nimblephp\framework\Interfaces\ModelInterface;
+use Nimblephp\framework\Kernel;
 use Nimblephp\framework\ModuleRegister;
 use Nimblephp\framework\Request;
 use Nimblephp\table\Interfaces\ColumnInterface;
@@ -287,6 +289,12 @@ class Table implements TableInterface
      */
     public function render(): string
     {
+        if (Kernel::$activeDebugbar) {
+            $debugbarId = Debugbar::uuid();
+            Debugbar::startTime($debugbarId, 'Load table ' . $this->getId());
+        }
+
+
         $isSaveAjaxMode = $this->isAjax()
             && !is_null($this->request->getPost('table_action_id'))
             && htmlspecialchars($this->request->getPost('table_action_id')) === $this->getId();
@@ -317,6 +325,12 @@ class Table implements TableInterface
 
         $this->prepareDataCount();
         echo $this->viewClass->render($this);
+
+
+        if (Kernel::$activeDebugbar) {
+            Debugbar::stopTime($debugbarId);
+            Debugbar::$debugBar['Tables']->addMessage($this, $this->getId());
+        }
 
         return ob_get_clean();
     }
