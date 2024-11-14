@@ -166,6 +166,12 @@ class Table implements TableInterface
     protected \krzysztofzylka\DatabaseManager\Table $configTable;
 
     /**
+     * Filters
+     * @var array
+     */
+    protected array $filters = [];
+
+    /**
      * Initialize
      */
     public function __construct(?string $id = null)
@@ -303,6 +309,10 @@ class Table implements TableInterface
             $this->getAjaxConfig();
         }
 
+        foreach ($this->filters as $filter) {
+            $this->conditions = array_merge($this->conditions, $filter->getCondition());
+        }
+
         ob_start();
 
         $this->prepareDataCount();
@@ -334,11 +344,34 @@ class Table implements TableInterface
             $this->setSearch(htmlspecialchars($search));
         }
 
+        foreach ($_POST as $key => $value) {
+            if (str_starts_with(htmlspecialchars($key), 'filter-')) {
+                $explode = explode('-', htmlspecialchars($key));
+
+                if (array_key_exists($explode[1], $this->getFilters())) {
+                    /** @var Filter $filter */
+                    $filter = $this->getFilters()[$explode[1]];
+                    $filter->setValue($value);
+                }
+            }
+        }
+
+        $filters = [];
+
+        /**
+         * @var string $key
+         * @var Filter $filter
+         */
+        foreach ($this->filters as $key => $filter) {
+            $filters[$key] = $filter->getValue();
+        }
+
         $config = [
             'page' => $this->getPage(),
             'search' => $this->getSearch(),
             'orderBy' => $this->getOrderBy(),
-            'limit' => $this->getLimit()
+            'limit' => $this->getLimit(),
+            'filters' => $filters
         ];
 
         $find = $this->configTable->find(
@@ -388,8 +421,20 @@ class Table implements TableInterface
 
             $this->setPage($config['page']);
             $this->setSearch($config['search']);
-            $this->setOrderBy($config['orderBy']);
+
+            if (!is_null($config['orderBy'])) {
+                $this->setOrderBy($config['orderBy']);
+            }
+
             $this->setLimit($config['limit']);
+
+            foreach ($config['filters'] ?? [] as $filterKey => $value) {
+                if (array_key_exists($filterKey, $this->filters)) {
+                    /** @var Filter $filter */
+                    $filter = $this->filters[$filterKey];
+                    $filter->setValue($value);
+                }
+            }
         }
     }
 
@@ -740,6 +785,27 @@ class Table implements TableInterface
     public function getAjaxKey(): null|int|string
     {
         return self::$ajaxKey;
+    }
+
+    /**
+     * Add filter
+     * @param Filter $filter
+     * @return Table
+     */
+    public function addFilter(Filter $filter): self
+    {
+        $this->filters[$filter->getKey()] = $filter;
+
+        return $this;
+    }
+
+    /**
+     * Get filters
+     * @return array
+     */
+    public function getFilters(): array
+    {
+        return $this->filters;
     }
 
 }

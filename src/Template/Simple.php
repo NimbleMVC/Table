@@ -4,6 +4,7 @@ namespace Nimblephp\table\Template;
 
 use Krzysztofzylka\HtmlGenerator\HtmlGenerator;
 use Nimblephp\table\Column;
+use Nimblephp\table\Filter;
 use Nimblephp\table\Table;
 
 class Simple
@@ -63,7 +64,30 @@ class Simple
      */
     private function renderFooter(): string
     {
-        return $this->renderFooterPagination();
+        return HtmlGenerator::createTag('div')
+            ->setClass('d-flex justify-content-between')
+            ->setContent(
+                HtmlGenerator::createTag('div')
+                    ->setContent($this->renderFooterFilters())
+                . HtmlGenerator::createTag('div')
+                    ->setContent($this->renderFooterPagination())
+            );
+    }
+
+    /**
+     * Render footer filters
+     * @return string
+     */
+    private function renderFooterFilters(): string
+    {
+        $content = '';
+
+        /** @var Filter $filter */
+        foreach ($this->table->getFilters() as $filter) {
+            $content .= $filter->render($this->table);
+        }
+
+        return $content;
     }
 
     /**
