@@ -2,7 +2,10 @@
 
 namespace Nimblephp\table;
 
+use DebugBar\DataCollector\MessagesCollector;
 use Krzysztofzylka\File\File;
+use Nimblephp\debugbar\Collectors\ModuleCollector;
+use Nimblephp\debugbar\Debugbar;
 use Nimblephp\framework\Interfaces\ServiceProviderInterface;
 use Nimblephp\framework\Kernel;
 use Nimblephp\framework\ModuleRegister;
@@ -18,6 +21,10 @@ class ServiceProvider implements ServiceProviderInterface
         }
 
         File::copy(__DIR__ . '/Resources/table.js', Kernel::$projectPath . '/public/assets/table.js');
+
+        if (Kernel::$activeDebugbar) {
+            Debugbar::$debugBar->addCollector(new MessagesCollector('Tables'));
+        }
     }
 
 }
