@@ -24,9 +24,11 @@ class Simple
         'action-button' => 'btn btn-primary',
         'action-search-div' => 'col d-flex justify-content-end',
         'action-search-form' => 'd-flex m-0',
-        'action-search-input' => 'form-control me-2',
+        'action-search-input' => 'form-control me-2 form-control-sm',
         'table-footer' => 'p-1 mt-2',
-        'table-footer-pagination-ul' => 'justify-content-end m-0'
+        'table-footer-pagination-ul' => 'justify-content-end m-0 pagination-sm',
+        'table-footer-pagination-a' => 'page-link',
+        'table-footer-pagination-li' => 'page-item'
     ];
 
     /**
@@ -124,10 +126,10 @@ class Simple
                                 ->setContent(
                                     ($this->table->getPage() > 1
                                         ? HtmlGenerator::createTag('li')
-                                            ->setClass('page-item')
+                                            ->setClass(self::$CLASSES['table-footer-pagination-li'])
                                             ->setContent(
                                                 HtmlGenerator::createTag('a')
-                                                    ->setClass('page-link ajax-link')
+                                                    ->setClass(trim('ajax-link ' . self::$CLASSES['table-footer-pagination-a']))
                                                     ->addAttribute('href', '?page=' . $this->table->getPage() - 1)
                                                     ->setContent('&laquo;')
                                             )
@@ -237,7 +239,7 @@ class Simple
                                 ->addAttribute('type', 'search')
                                 ->addAttribute('name', 'search')
                                 ->addAttribute('value', $this->table->getSearch())
-                                ->addAttribute('placeholder', 'Search...')
+                                ->addAttribute('placeholder', Table::$LANGUAGE['search'])
                                 ->addAttribute('aria-label', 'Search')
                         )
                 );

@@ -23,6 +23,14 @@ class Table implements TableInterface
 {
 
     /**
+     * Language
+     * @var array|string[]
+     */
+    public static array $LANGUAGE = [
+        'search' => 'Search...'
+    ];
+
+    /**
      * Layout
      * empty (default, bootstrap5)
      * @var string
@@ -326,13 +334,38 @@ class Table implements TableInterface
         $this->prepareDataCount();
         echo $this->viewClass->render($this);
 
-
         if (Kernel::$activeDebugbar) {
             Debugbar::stopTime($debugbarId);
-            Debugbar::$debugBar['Tables']->addMessage($this, $this->getId());
         }
 
+        $this->addDebug();
         return ob_get_clean();
+    }
+
+    protected function addDebug(): void
+    {
+        if (!Kernel::$activeDebugbar) {
+            return;
+        }
+
+        $table = [
+            'id' => $this->getId(),
+            'filters' => array_keys($this->filters),
+            'model' => $this->getModel() ? get_class($this->getModel()) : '',
+            'conditions' => $this->getConditions(),
+            'class' => $this->getClass(),
+            'actions' => $this->getActions(),
+            'group_by' => $this->getGroupBy(),
+            'order_by' => $this->getOrderBy(),
+            'page' => $this->getPage(),
+            'page_count' => $this->getPageCount(),
+            'ajax' => $this->isAjax() ? 'True' : 'False',
+            'limit' => $this->getLimit(),
+            'search' => $this->getSearch(),
+            'columns' => $this->getColumns()
+        ];
+
+        Debugbar::$debugBar['Tables']->addMessage($table, $this->getId());
     }
 
     /**
