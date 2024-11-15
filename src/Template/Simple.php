@@ -230,18 +230,13 @@ class Simple
             $content .= HtmlGenerator::createTag('div')
                 ->setclass(trim(self::$CLASSES['action-search-div']))
                 ->setContent(
-                    HtmlGenerator::createTag('form')
-                        ->addAttribute('onsubmit', 'handleSubmit()')
-                        ->setClass(trim(self::$CLASSES['action-search-form']))
-                        ->setContent(
-                            HtmlGenerator::createTag('input')
-                                ->setClass(trim('ajax-form ' . self::$CLASSES['action-search-input']))
-                                ->addAttribute('type', 'search')
-                                ->addAttribute('name', 'search')
-                                ->addAttribute('value', $this->table->getSearch())
-                                ->addAttribute('placeholder', Table::$LANGUAGE['search'])
-                                ->addAttribute('aria-label', 'Search')
-                        )
+                    HtmlGenerator::createTag('input')
+                        ->setClass(trim('ajax-form ' . self::$CLASSES['action-search-input']))
+                        ->addAttribute('type', 'search')
+                        ->addAttribute('name', 'search')
+                        ->addAttribute('value', $this->table->getSearch())
+                        ->addAttribute('placeholder', Table::$LANGUAGE['search'])
+                        ->addAttribute('aria-label', 'Search')
                 );
         }
 
