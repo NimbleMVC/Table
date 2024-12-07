@@ -3,18 +3,32 @@
 namespace Nimblephp\table;
 
 use krzysztofzylka\DatabaseManager\Condition;
+use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
+use Nimblephp\debugbar\Debugbar;
 use Nimblephp\framework\Cookie;
 use Nimblephp\framework\Exception\DatabaseException;
+use Nimblephp\framework\Exception\NimbleException;
 use Nimblephp\framework\Interfaces\ModelInterface;
+use Nimblephp\framework\Kernel;
+use Nimblephp\framework\ModuleRegister;
 use Nimblephp\framework\Request;
 use Nimblephp\table\Interfaces\ColumnInterface;
 use Nimblephp\table\Interfaces\TableInterface;
+use Nimblephp\table\Template\Simple;
 
 /**
  * Initialize table
  */
 class Table implements TableInterface
 {
+
+    /**
+     * Language
+     * @var array|string[]
+     */
+    public static array $LANGUAGE = [
+        'search' => 'Search...'
+    ];
 
     /**
      * Layout
@@ -24,10 +38,9 @@ class Table implements TableInterface
     public static string $layout = '';
 
     /**
-     * View path
-     * @var string|null
+     * View class
      */
-    protected ?string $viewPath = null;
+    protected $viewClass = null;
 
     /**
      * Columns
@@ -145,15 +158,43 @@ class Table implements TableInterface
     protected string $class = '';
 
     /**
+     * Is ajax table
+     * @var bool
+     */
+    protected bool $isAjax = false;
+
+    /**
+     * Ajax database key
+     * @var null|int|string
+     */
+    protected static null|int|string $ajaxKey = null;
+
+    /**
+     * Config table
+     * @var \krzysztofzylka\DatabaseManager\Table
+     */
+    protected \krzysztofzylka\DatabaseManager\Table $configTable;
+
+    /**
+     * Filters
+     * @var array
+     */
+    protected array $filters = [];
+
+    /**
      * Initialize
      */
     public function __construct(?string $id = null)
     {
+        if (ModuleRegister::isset('nimblephp/migrations') && $_ENV['DATABASE']) {
+            $this->configTable = new \krzysztofzylka\DatabaseManager\Table('module_table_config');
+        }
+
         $this->request = new Request();
         $this->cookie = new Cookie();
 
-        if (is_null($this->viewPath)) {
-            $this->viewPath = __DIR__ . '/View/table' . (self::$layout ? ('_' . self::$layout) : '') . '.phtml';
+        if (is_null($this->viewClass)) {
+            $this->viewClass = new Simple();
         }
 
         if (!is_null($id)) {
@@ -167,6 +208,10 @@ class Table implements TableInterface
      */
     public function saveConfig(): void
     {
+        if ($this->isAjax()) {
+            return;
+        }
+
         $this->cookie->set($this->configName, json_encode($this->config));
     }
 
@@ -176,6 +221,10 @@ class Table implements TableInterface
      */
     public function readConfig(): void
     {
+        if ($this->isAjax()) {
+            return;
+        }
+
         if ($this->cookie->exists($this->configName)) {
             $this->config = $this->config + json_decode($this->cookie->get($this->configName), true);
         }
@@ -243,15 +292,197 @@ class Table implements TableInterface
      * Render table
      * @return string
      * @throws DatabaseException
+     * @throws DatabaseManagerException
+     * @throws NimbleException
      */
     public function render(): string
     {
+        if (Kernel::$activeDebugbar) {
+            $debugbarId = Debugbar::uuid();
+            Debugbar::startTime($debugbarId, 'Load table ' . $this->getId());
+        }
+
+
+        $isSaveAjaxMode = $this->isAjax()
+            && !is_null($this->request->getPost('table_action_id'))
+            && htmlspecialchars($this->request->getPost('table_action_id')) === $this->getId();
+
+        if ($this->isAjax()) {
+            if (!$_ENV['DATABASE']) {
+                throw new NimbleException('The database must be enabled', 500);
+            }
+
+            if (!ModuleRegister::isset('nimblephp/migrations')) {
+                throw new NimbleException('The nimblephp/migrations module must be enabled', 500);
+            }
+
+            $this->getAjaxConfig();
+
+            if ($isSaveAjaxMode) {
+                $this->saveAjaxConfig();
+            }
+
+            $this->getAjaxConfig();
+        }
+
+        foreach ($this->filters as $filter) {
+            $this->conditions = array_merge($this->conditions, $filter->getCondition());
+        }
+
         ob_start();
 
         $this->prepareDataCount();
-        include($this->viewPath);
+        echo $this->viewClass->render($this);
 
+        if (Kernel::$activeDebugbar) {
+            Debugbar::stopTime($debugbarId);
+        }
+
+        $this->addDebug();
         return ob_get_clean();
+    }
+
+    protected function addDebug(): void
+    {
+        if (!Kernel::$activeDebugbar) {
+            return;
+        }
+
+        $table = [
+            'id' => $this->getId(),
+            'filters' => array_keys($this->filters),
+            'model' => $this->getModel() ? get_class($this->getModel()) : '',
+            'conditions' => $this->getConditions(),
+            'class' => $this->getClass(),
+            'actions' => $this->getActions(),
+            'group_by' => $this->getGroupBy(),
+            'order_by' => $this->getOrderBy(),
+            'page' => $this->getPage(),
+            'page_count' => $this->getPageCount(),
+            'ajax' => $this->isAjax() ? 'True' : 'False',
+            'limit' => $this->getLimit(),
+            'search' => $this->getSearch(),
+            'columns' => $this->getColumns()
+        ];
+
+        Debugbar::$debugBar['Tables']->addMessage($table, $this->getId());
+    }
+
+    /**
+     * Save ajax config
+     * @return void
+     * @throws DatabaseManagerException
+     */
+    public function saveAjaxConfig(): void
+    {
+        if (!$this->isAjax()) {
+            return;
+        }
+
+        $page = $this->request->getPost('page');
+
+        if (!is_null($page)) {
+            $this->setPage(htmlspecialchars($page));
+        }
+
+        $search = $this->request->getPost('search');
+
+        if (!is_null($search)) {
+            $this->setSearch(htmlspecialchars($search));
+        }
+
+        foreach ($_POST as $key => $value) {
+            if (str_starts_with(htmlspecialchars($key), 'filter-')) {
+                $explode = explode('-', htmlspecialchars($key));
+
+                if (array_key_exists($explode[1], $this->getFilters())) {
+                    /** @var Filter $filter */
+                    $filter = $this->getFilters()[$explode[1]];
+                    $filter->setValue($value);
+                }
+            }
+        }
+
+        $filters = [];
+
+        /**
+         * @var string $key
+         * @var Filter $filter
+         */
+        foreach ($this->filters as $key => $filter) {
+            $filters[$key] = $filter->getValue();
+        }
+
+        $config = [
+            'page' => $this->getPage(),
+            'search' => $this->getSearch(),
+            'orderBy' => $this->getOrderBy(),
+            'limit' => $this->getLimit(),
+            'filters' => $filters
+        ];
+
+        $find = $this->configTable->find(
+            [
+                'module_table_config.table_id' => $this->getId(),
+                'module_table_config.key' => $this->getAjaxKey()
+            ],
+            ['module_table_config.id']
+        );
+
+        if ($find) {
+            $this->configTable->setId($find['module_table_config']['id'])->update(['config' => json_encode($config)]);
+        } else {
+            $this->configTable->insert(
+                [
+                    'key' => $this->getAjaxKey(),
+                    'table_id' => $this->getId(),
+                    'config' => json_encode($config)
+                ]
+            );
+        }
+
+        $this->configTable->setId();
+    }
+
+    /**
+     * Get ajax config
+     * @return void
+     * @throws DatabaseManagerException
+     */
+    public function getAjaxConfig(): void
+    {
+        if (!$this->isAjax()) {
+            return;
+        }
+
+        $find = $this->configTable->find(
+            [
+                'module_table_config.table_id' => $this->getId(),
+                'module_table_config.key' => $this->getAjaxKey()
+            ],
+            ['module_table_config.config']
+        );
+
+        if ($find) {
+            $config = json_decode($find['module_table_config']['config'], true);
+
+            $this->setPage($config['page']);
+            $this->setSearch($config['search']);
+
+            if (!is_null($config['orderBy'])) {
+                $this->setOrderBy($config['orderBy']);
+            }
+
+            $this->setLimit($config['limit']);
+
+            foreach ($config['filters'] ?? [] as $filterKey => $value) {
+                if (array_key_exists($filterKey, $this->filters)) {
+                    /** @var Filter $filter */
+                    $filter = $this->filters[$filterKey];
+                    $filter->setValue($value ?? '');
+                }
+            }
+        }
     }
 
     /**
@@ -490,6 +721,24 @@ class Table implements TableInterface
     }
 
     /**
+     * Get actions
+     * @return array
+     */
+    public function getActions(): array
+    {
+        return $this->actions;
+    }
+
+    /**
+     * Get columns
+     * @return array
+     */
+    public function getColumns(): array
+    {
+        return $this->columns;
+    }
+
+    /**
      * Set additional table class
      * @param string $class
      * @return void
@@ -520,7 +769,7 @@ class Table implements TableInterface
                 $this->getConditions()
             );
         } else {
-            $this->dataCount = count($this->data);
+            $this->dataCount = count($this->data ?? []);
         }
 
         $this->setPageCount(ceil($this->dataCount / $this->getLimit()));
@@ -539,22 +788,71 @@ class Table implements TableInterface
     protected function getDataFromArray(array $data, string $key): ?string
     {
         try {
-            foreach (explode('.', $key) as $value) {
-                if (!array_key_exists($value, $data)) {
-                    return null;
-                }
+            $generatedArray = '["' . implode('"]["', explode('.', $key)) . '"]';
 
-                $data = $data[$value];
-            }
-
-            if (!is_array($data)) {
-                return $data;
-            }
-
-            return null;
+            return @eval('return $data' . $generatedArray . ';');
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    /**
+     * Is ajax
+     * @return bool
+     */
+    public function isAjax(): bool {
+        return $this->ajax;
+    }
+
+    /**
+     * Set ajax mode
+     * @param bool $ajax
+     * @return Table
+     */
+    public function setAjax(bool $ajax = true): self
+    {
+        $this->ajax = $ajax;
+
+        return $this;
+    }
+
+    /**
+     * Set ajax key
+     * @param int|string|null $ajaxKey
+     */
+    public static function setAjaxKey(null|int|string $ajaxKey): void
+    {
+        self::$ajaxKey = $ajaxKey;
+    }
+
+    /**
+     * Get ajax key
+     * @return null|int|string
+     */
+    public function getAjaxKey(): null|int|string
+    {
+        return self::$ajaxKey;
+    }
+
+    /**
+     * Add filter
+     * @param Filter $filter
+     * @return Table
+     */
+    public function addFilter(Filter $filter): self
+    {
+        $this->filters[$filter->getKey()] = $filter;
+
+        return $this;
+    }
+
+    /**
+     * Get filters
+     * @return array
+     */
+    public function getFilters(): array
+    {
+        return $this->filters;
     }
 
 }
