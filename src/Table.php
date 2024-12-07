@@ -338,6 +338,8 @@ class Table implements TableInterface
             Debugbar::stopTime($debugbarId);
         }
 
+        echo '<script>$("#' . $this->getId() . '").ajaxTable()</script>';
+
         $this->addDebug();
         return ob_get_clean();
     }
