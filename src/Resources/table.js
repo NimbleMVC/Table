@@ -1,22 +1,57 @@
-window.addEventListener('DOMContentLoaded', function() {
-    document.body.addEventListener('click', function(event) {
-        const link = event.target.closest('.ajax-link');
+(function ($) {
+    const methods = {
+        init: function () {
+            return this.each(function () {
+                const $table = $(this);
 
-        if (link) {
-            if (!link.closest('.table-module')) {
-                return;
-            }
+                if (!$table.hasClass('table-module')) {
+                    $table.addClass('table-module');
+                }
 
-            event.preventDefault();
+                // Obsługa kliknięcia w link
+                $table.on('click', '.ajax-link', function (event) {
+                    event.preventDefault();
 
-            const urlParams = new URLSearchParams(link.getAttribute('href')),
-                page = urlParams.get('page'),
-                table_id = link.closest('.table-module').getAttribute('id'),
-                formData = new FormData();
+                    const link = $(this),
+                        urlParams = new URLSearchParams(link.attr('href')),
+                        page = urlParams.get('page'),
+                        tableId = link.closest('.table-module').attr('id'),
+                        formData = new FormData();
 
-            formData.append('page', page);
-            formData.append('table_action_id', table_id);
+                    formData.append('page', page);
+                    formData.append('table_action_id', tableId);
 
+                    methods._fetchAndUpdate(tableId, formData);
+                });
+
+                // Obsługa Enter w formularzu
+                $table.on('keydown', '.ajax-form', function (event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        methods._submitFormData(this);
+                    }
+                });
+
+                // Obsługa zmiany w formularzu
+                $table.on('change', '.ajax-form', function (event) {
+                    if (event.target.tagName === 'SELECT' || event.target.type === 'date') {
+                        methods._submitFormData(this);
+                    }
+                });
+            });
+        },
+        reload: function () {
+            return this.each(function () {
+                const $table = $(this),
+                    tableId = $table.attr('id'),
+                    formData = new FormData();
+
+                formData.append('table_action_id', tableId);
+
+                methods._fetchAndUpdate(tableId, formData);
+            });
+        },
+        _fetchAndUpdate: function (tableId, formData) {
             fetch(window.location.href, {
                 method: 'POST',
                 body: formData
@@ -25,10 +60,10 @@ window.addEventListener('DOMContentLoaded', function() {
                 .then(html => {
                     const parser = new DOMParser(),
                         doc = parser.parseFromString(html, 'text/html'),
-                        newElement = doc.getElementById(table_id);
+                        newElement = doc.getElementById(tableId);
 
                     if (newElement) {
-                        const currentElement = document.getElementById(table_id);
+                        const currentElement = document.getElementById(tableId);
 
                         if (currentElement) {
                             currentElement.innerHTML = newElement.innerHTML;
@@ -38,50 +73,25 @@ window.addEventListener('DOMContentLoaded', function() {
                 .catch(error => {
                     console.error('Table error:', error);
                 });
+        },
+        _submitFormData: function (input) {
+            const formData = new FormData(),
+                tableId = $(input).closest('.table-module').attr('id');
+
+            formData.append($(input).attr('name'), $(input).val());
+            formData.append('table_action_id', tableId);
+
+            methods._fetchAndUpdate(tableId, formData);
         }
-    });
+    };
 
-    document.body.addEventListener('keydown', function(event) {
-        if (event.target.matches('.ajax-form') && event.key === 'Enter') {
-            event.preventDefault();
-            submitFormData(event.target);
+    $.fn.ajaxTable = function (methodOrOptions) {
+        if (methods[methodOrOptions]) {
+            return methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else if (typeof methodOrOptions === 'object' || !methodOrOptions) {
+            return methods.init.apply(this, arguments);
+        } else {
+            $.error('Method ' + methodOrOptions + ' does not exist on jQuery.ajaxTable');
         }
-    });
-
-    document.body.addEventListener('change', function(event) {
-        if (event.target.matches('.ajax-form') && (event.target.tagName === 'SELECT' || event.target.type === 'date')) {
-            submitFormData(event.target);
-        }
-    });
-
-    function submitFormData(input) {
-        const formData = new FormData(),
-            table_id = input.closest('.table-module').getAttribute('id');
-
-        formData.append(input.name, input.value);
-        formData.append('table_action_id', table_id);
-
-        fetch(window.location.href, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser(),
-                    doc = parser.parseFromString(html, 'text/html'),
-                    newElement = doc.getElementById(table_id);
-
-                if (newElement) {
-                    const currentElement = document.getElementById(table_id);
-
-                    if (currentElement) {
-                        currentElement.innerHTML = newElement.innerHTML;
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Input error:', error);
-            });
-    }
-
-});
+    };
+}(jQuery));
