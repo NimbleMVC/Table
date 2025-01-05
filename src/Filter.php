@@ -4,8 +4,9 @@ namespace Nimblephp\table;
 
 use krzysztofzylka\DatabaseManager\Condition;
 use Krzysztofzylka\HtmlGenerator\HtmlGenerator;
+use Nimblephp\table\Interfaces\FilterInterface;
 
-class Filter
+class Filter implements FilterInterface
 {
 
     /**
