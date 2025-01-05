@@ -8,20 +8,54 @@ use Krzysztofzylka\HtmlGenerator\HtmlGenerator;
 class Filter
 {
 
+    /**
+     * Conditions
+     * @var array
+     */
     protected array $condition = [];
 
+    /**
+     * Base condition
+     * @var array
+     */
     protected array $baseCondition = [];
 
+    /**
+     * Title
+     * @var string|null
+     */
     protected ?string $title = null;
 
+    /**
+     * Type
+     * @var string
+     */
     protected string $type = 'select';
 
+    /**
+     * Key
+     * @var string
+     */
     protected string $key = '';
 
+    /**
+     * Content
+     * @var mixed|null
+     */
     protected mixed $content = null;
 
+    /**
+     * Value
+     * @var string
+     */
     protected string $value;
 
+    /**
+     * Create filter
+     * @param string $key
+     * @param string|null $type
+     * @return self
+     */
     public static function create(string $key, ?string $type = null): self
     {
         $filter = new self();
@@ -31,6 +65,11 @@ class Filter
         return $filter;
     }
 
+    /**
+     * Render filter
+     * @param Table $table
+     * @return string
+     */
     public function render(Table $table): string
     {
         $content = '';
@@ -74,6 +113,11 @@ class Filter
         </div>';
     }
 
+    /**
+     * Set title
+     * @param string|null $title
+     * @return $this
+     */
     public function setTitle(?string $title): self
     {
         $this->title = $title;
@@ -81,11 +125,20 @@ class Filter
         return $this;
     }
 
+    /**
+     * Get title
+     * @return string|null
+     */
     public function getTitle(): ?string
     {
         return $this->title;
     }
 
+    /**
+     * Set condition
+     * @param array $condition
+     * @return $this
+     */
     public function setCondition(array $condition): self
     {
         $this->baseCondition = $condition;
@@ -94,6 +147,10 @@ class Filter
         return $this;
     }
 
+    /**
+     * Get condition
+     * @return array
+     */
     public function getCondition(): array
     {
         if (!isset($this->value)) {
@@ -103,12 +160,21 @@ class Filter
         return $this->condition;
     }
 
+    /**
+     * Set type
+     * @param string $type
+     * @return $this
+     */
     public function setType(string $type): self
     {
         $this->type = $type;
         return $this;
     }
 
+    /**
+     * Get type
+     * @return string|null
+     */
     public function getType(): ?string
     {
         return $this->type;
@@ -116,6 +182,7 @@ class Filter
 
     /**
      * @param string $key
+     * @return Filter
      */
     public function setKey(string $key): self
     {
@@ -134,6 +201,7 @@ class Filter
 
     /**
      * @param mixed $content
+     * @return Filter
      */
     public function setContent(mixed $content): self
     {
@@ -142,11 +210,20 @@ class Filter
         return $this;
     }
 
+    /**
+     * Get content
+     * @return mixed
+     */
     public function getContent(): mixed
     {
         return $this->content;
     }
 
+    /**
+     * Set value
+     * @param string $value
+     * @return $this
+     */
     public function setValue(string $value): self
     {
         $this->value = $value;
@@ -161,7 +238,6 @@ class Filter
 
                 $condition[$conditionKey] = $this->getValue();
             } elseif ($conditionValue instanceof Condition) {
-                /** @var Condition $conditionValue */
                 if ($conditionValue->getValue() === '%VALUE%') {
                     if (empty(trim($value))) {
                         unset($condition[$conditionKey]);
@@ -178,6 +254,10 @@ class Filter
         return $this;
     }
 
+    /**
+     * Get value
+     * @return string|null
+     */
     public function getValue(): ?string
     {
         return $this->value ?? null;
