@@ -16,7 +16,7 @@
   ],
   "require": {
     "php": ">=8.2",
-    "nimblephp/framework": "^0.1.10",
+    "nimblephp/framework": "^0.1.19",
     "nimblephp/migrations": "^0.1.4",
     "krzysztofzylka/html-generator": "^2.0.6"
   }

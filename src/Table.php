@@ -13,6 +13,7 @@ use Nimblephp\framework\Kernel;
 use Nimblephp\framework\ModuleRegister;
 use Nimblephp\framework\Request;
 use Nimblephp\table\Interfaces\ColumnInterface;
+use Nimblephp\table\Interfaces\FilterInterface;
 use Nimblephp\table\Interfaces\TableInterface;
 use Nimblephp\table\Template\Simple;
 
@@ -304,8 +305,7 @@ class Table implements TableInterface
 
 
         $isSaveAjaxMode = $this->isAjax()
-            && !is_null($this->request->getPost('table_action_id'))
-            && htmlspecialchars($this->request->getPost('table_action_id')) === $this->getId();
+            && $this->request->getPost('table_action_id', false) === $this->getId();
 
         if ($this->isAjax()) {
             if (!$_ENV['DATABASE']) {
@@ -384,21 +384,21 @@ class Table implements TableInterface
         $page = $this->request->getPost('page');
 
         if (!is_null($page)) {
-            $this->setPage(htmlspecialchars($page));
+            $this->setPage($page);
         }
 
         $search = $this->request->getPost('search');
 
         if (!is_null($search)) {
-            $this->setSearch(htmlspecialchars($search));
+            $this->setSearch($search);
         }
 
-        foreach ($_POST as $key => $value) {
-            if (str_starts_with(htmlspecialchars($key), 'filter-')) {
-                $explode = explode('-', htmlspecialchars($key));
+        foreach ($this->request->getAllPost() as $key => $value) {
+            if (str_starts_with($key, 'filter-')) {
+                $explode = explode('-', $key);
 
                 if (array_key_exists($explode[1], $this->getFilters())) {
-                    /** @var Filter $filter */
+                    /** @var FilterInterface $filter */
                     $filter = $this->getFilters()[$explode[1]];
                     $filter->setValue($value);
                 }
@@ -409,7 +409,7 @@ class Table implements TableInterface
 
         /**
          * @var string $key
-         * @var Filter $filter
+         * @var FilterInterface $filter
          */
         foreach ($this->filters as $key => $filter) {
             $filters[$key] = $filter->getValue();
@@ -479,7 +479,7 @@ class Table implements TableInterface
 
             foreach ($config['filters'] ?? [] as $filterKey => $value) {
                 if (array_key_exists($filterKey, $this->filters)) {
-                    /** @var Filter $filter */
+                    /** @var FilterInterface $filter */
                     $filter = $this->filters[$filterKey];
                     $filter->setValue($value ?? '');
                 }
@@ -745,7 +745,7 @@ class Table implements TableInterface
      * @param string $class
      * @return void
      */
-    public function setClass(string $class = '')
+    public function setClass(string $class = ''): void
     {
         $this->class = $class;
     }
@@ -838,10 +838,10 @@ class Table implements TableInterface
 
     /**
      * Add filter
-     * @param Filter $filter
+     * @param FilterInterface $filter
      * @return Table
      */
-    public function addFilter(Filter $filter): self
+    public function addFilter(FilterInterface $filter): self
     {
         $this->filters[$filter->getKey()] = $filter;
 
