@@ -41,7 +41,7 @@
                 });
             });
         },
-        reload: function () {
+        reload: function (callback) {
             let $element = $(this);
 
             if ($element[0].nodeType === Node.DOCUMENT_NODE) {
@@ -59,7 +59,11 @@
 
                 formData.append('table_action_id', tableId);
 
-                methods._fetchAndUpdate(tableId, formData);
+                methods._fetchAndUpdate(tableId, formData).then(() => {
+                    if (typeof callback === 'function') {
+                        callback.call($table);
+                    }
+                });
             });
         },
         _fetchAndUpdate: function (tableId, formData) {
@@ -67,7 +71,7 @@
                 console.log('table reload', tableId, formData);
             }
 
-            fetch(window.location.href, {
+            return fetch(window.location.href, {
                 method: 'POST',
                 body: formData
             })
@@ -83,7 +87,7 @@
 
                     if (newElement) {
                         if (settings.debug) {
-                            console.log('table reload update content', tableId, newElement)
+                            console.log('table reload update content', tableId, newElement);
                         }
 
                         const currentElement = document.getElementById(tableId);
@@ -93,7 +97,7 @@
                         }
                     } else {
                         if (settings.debug) {
-                            console.log('table reload no new content', tableId)
+                            console.log('table reload no new content', tableId);
                         }
                     }
                 })
