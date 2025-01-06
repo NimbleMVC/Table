@@ -792,7 +792,7 @@ class Table implements TableInterface
         try {
             $generatedArray = '["' . implode('"]["', explode('.', $key)) . '"]';
 
-            return @eval('return $data' . $generatedArray . ';');
+            return @eval('return isset($data' . $generatedArray . ') ? $data' . $generatedArray . ' : \'\' ;');
         } catch (\Throwable) {
             return null;
         }
