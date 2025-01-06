@@ -162,13 +162,19 @@ class Column implements ColumnInterface
      */
     public function getStyleAsString(): string
     {
-        return implode('; ', array_map(
-                function ($key, $value) {
-                    return "$key: $value";
-                },
-                array_keys($this->getStyle()),
-                $this->getStyle()
-            )) . ';';
+        $data = implode('; ', array_map(
+            function ($key, $value) {
+                return "$key: $value";
+            },
+            array_keys($this->getStyle()),
+            $this->getStyle()
+        ));
+
+        if (empty(trim($data))) {
+            return '';
+        }
+
+        return $data . ';';
     }
 
 }
