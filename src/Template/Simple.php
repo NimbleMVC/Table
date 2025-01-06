@@ -16,14 +16,15 @@ class Simple
         'main-div' => 'm-2',
         'header' => 'row position-relative',
         'table' => 'table table-striped m-0',
+        'table-div' => 'table-responsive',
         'table-thead' => '',
         'table-thead-tr' => '',
         'table-tbody' => '',
-        'table-header' => 'd-flex justify-content-between mb-2',
-        'action-div' => 'pt-1 col',
-        'action-button' => 'btn btn-primary',
-        'action-search-div' => 'col d-flex justify-content-end',
-        'action-search-input' => 'form-control me-2 form-control-sm w-50',
+        'table-header' => 'd-flex flex-wrap justify-content-between mb-2',
+        'action-div' => 'pt-1 col-12 col-md-auto mb-2 mb-md-0',
+        'action-button' => 'btn btn-primary w-100',
+        'action-search-div' => 'col-12 col-md-auto d-flex justify-content-end',
+        'action-search-input' => 'form-control me-2 form-control-sm w-100',
         'table-footer' => 'p-1 mt-2',
         'table-footer-pagination-ul' => 'justify-content-end m-0 pagination-sm',
         'table-footer-pagination-a' => 'page-link',
@@ -45,12 +46,15 @@ class Simple
                 HtmlGenerator::createTag('div')
                     ->setClass(trim('table-header ' . self::$CLASSES['table-header']))
                     ->setContent($this->renderHeader())
-                . HtmlGenerator::createTag('table')
-                    ->setClass(trim(self::$CLASSES['table'] . ' ' . $this->table->getClass()))
-                    ->setContent(
-                        $this->renderTableHeader()
-                        . $this->renderTableBody()
-                    )
+                . HtmlGenerator::createTag(
+                    'div',
+                    HtmlGenerator::createTag('table')
+                        ->setClass(trim(self::$CLASSES['table'] . ' ' . $this->table->getClass()))
+                        ->setContent(
+                            $this->renderTableHeader()
+                            . $this->renderTableBody()
+                        )
+                )->setClass(self::$CLASSES['table-div'])
                 . HtmlGenerator::createTag('div')
                     ->setClass(trim('table-footer ' . self::$CLASSES['table-footer']))
                     ->setContent($this->renderFooter())
