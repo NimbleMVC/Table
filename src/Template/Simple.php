@@ -16,7 +16,7 @@ class Simple
         'main-div' => 'm-2',
         'header' => 'row position-relative',
         'table' => 'table table-striped m-0',
-        'table-div' => 'table-responsive',
+        'table-div' => 'table-responsive-md',
         'table-thead' => '',
         'table-thead-tr' => '',
         'table-tbody' => '',
