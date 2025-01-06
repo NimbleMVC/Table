@@ -1,4 +1,8 @@
 (function ($) {
+    const settings = {
+        debug: false
+    };
+
     const methods = {
         init: function () {
             return this.each(function () {
@@ -8,7 +12,6 @@
                     $table.addClass('table-module');
                 }
 
-                // Obsługa kliknięcia w link
                 $table.on('click', '.ajax-link', function (event) {
                     event.preventDefault();
 
@@ -24,7 +27,6 @@
                     methods._fetchAndUpdate(tableId, formData);
                 });
 
-                // Obsługa Enter w formularzu
                 $table.on('keydown', '.ajax-form', function (event) {
                     if (event.key === 'Enter') {
                         event.preventDefault();
@@ -32,7 +34,6 @@
                     }
                 });
 
-                // Obsługa zmiany w formularzu
                 $table.on('change', '.ajax-form', function (event) {
                     if (event.target.tagName === 'SELECT' || event.target.type === 'date') {
                         methods._submitFormData(this);
@@ -41,7 +42,17 @@
             });
         },
         reload: function () {
-            return this.each(function () {
+            let $element = $(this);
+
+            if ($element[0].nodeType === Node.DOCUMENT_NODE) {
+                $element = $('.table-module');
+            }
+
+            if (settings.debug) {
+                console.log('table reload', $element);
+            }
+
+            return $element.each(function () {
                 const $table = $(this),
                     tableId = $table.attr('id'),
                     formData = new FormData();
@@ -52,21 +63,37 @@
             });
         },
         _fetchAndUpdate: function (tableId, formData) {
+            if (settings.debug) {
+                console.log('table reload', tableId, formData);
+            }
+
             fetch(window.location.href, {
                 method: 'POST',
                 body: formData
             })
                 .then(response => response.text())
                 .then(html => {
+                    if (settings.debug) {
+                        console.log('table reload response', tableId, [html], window.location.href);
+                    }
+
                     const parser = new DOMParser(),
                         doc = parser.parseFromString(html, 'text/html'),
                         newElement = doc.getElementById(tableId);
 
                     if (newElement) {
+                        if (settings.debug) {
+                            console.log('table reload update content', tableId, newElement)
+                        }
+
                         const currentElement = document.getElementById(tableId);
 
                         if (currentElement) {
                             currentElement.innerHTML = newElement.innerHTML;
+                        }
+                    } else {
+                        if (settings.debug) {
+                            console.log('table reload no new content', tableId)
                         }
                     }
                 })
