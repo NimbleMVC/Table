@@ -3,6 +3,7 @@
 namespace Nimblephp\table;
 
 use krzysztofzylka\DatabaseManager\Condition;
+use krzysztofzylka\DatabaseManager\DatabaseManager;
 use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
 use Nimblephp\debugbar\Debugbar;
 use Nimblephp\framework\Cookie;
@@ -364,7 +365,8 @@ class Table implements TableInterface
             'ajax' => $this->isAjax() ? 'True' : 'False',
             'limit' => $this->getLimit(),
             'search' => $this->getSearch(),
-            'columns' => $this->getColumns()
+            'columns' => $this->getColumns(),
+            'sql' => $this->getModel() ? DatabaseManager::getLastSql() : ''
         ];
 
         Debugbar::$debugBar['Tables']->addMessage($table, $this->getId());
@@ -412,6 +414,10 @@ class Table implements TableInterface
          * @var FilterInterface $filter
          */
         foreach ($this->filters as $key => $filter) {
+            if (is_null($filter->getValue())) {
+                continue;
+            }
+
             $filters[$key] = $filter->getValue();
         }
 
