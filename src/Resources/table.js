@@ -39,6 +39,10 @@
                         methods._submitFormData(this);
                     }
                 });
+
+                $table.on('change', '.ajax-checkbox', function (event) {
+                    methods._submitFormData(this);
+                })
             });
         },
         reload: function (callback) {
@@ -116,7 +120,15 @@
             const formData = new FormData(),
                 tableId = $(input).closest('.table-module').attr('id');
 
-            formData.append($(input).attr('name'), $(input).val());
+            let value;
+
+            if ($(input).attr('type') === 'checkbox') {
+                value = $(input).prop('checked') ? 1 : 0;
+            } else {
+                value = $(input).val();
+            }
+
+            formData.append($(input).attr('name'), value);
             formData.append('table_action_id', tableId);
 
             methods._fetchAndUpdate(tableId, formData);

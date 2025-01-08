@@ -74,6 +74,7 @@ class Filter implements FilterInterface
     public function render(Table $table): string
     {
         $content = '';
+        $title = true;
 
         switch ($this->getType()) {
             case 'select':
@@ -106,10 +107,34 @@ class Filter implements FilterInterface
                     ->addAttribute('value', $this->getValue() ?? '');
 
                 break;
+            case 'checkbox':
+                $title = false;
+
+                $checkbox = HtmlGenerator::createTag('input')
+                    ->setClass('form-check-input ajax-checkbox')
+                    ->setName('filter-' . $this->getKey())
+                    ->addAttribute('type', 'checkbox')
+                    ->setId('FilterCheckbox_' . $this->getKey());
+
+                if ((bool)$this->getValue()) {
+                    $checkbox->addAttribute('checked', 'checked');
+                }
+
+                $content .= HtmlGenerator::createTag('div')
+                    ->setClass('form-check')
+                    ->addAttribute('style', 'border: 1px solid rgb(222, 226, 230); border-radius: 5px; padding: 2px; padding-left: 32px; padding-right: 7px;')
+                    ->setContent(
+                        $checkbox
+                        . HtmlGenerator::createTag('label')
+                            ->setClass('form-check-label')
+                            ->addAttribute('for', 'FilterCheckbox_' . $this->getKey())
+                            ->setContent($this->getTitle())
+                    );
+                break;
         }
 
         return '<div style="position: relative; float: left;" class="me-2">
-            <label for="floatingSelect" style="font-size: 0.8em; position: absolute; top: -12px; left: 5px; padding: 1px;" class="bg-body user-select-none">' . $this->getTitle() . '</label>
+            ' . ($title ? '<label for="floatingSelect" style="font-size: 0.8em; position: absolute; top: -12px; left: 5px; padding: 1px;" class="bg-body user-select-none">' . $this->getTitle() . '</label>' : '') . '
             ' . $content . '
         </div>';
     }
@@ -155,6 +180,10 @@ class Filter implements FilterInterface
     public function getCondition(): array
     {
         if (!isset($this->value)) {
+            return [];
+        }
+
+        if ($this->getType() === 'checkbox' && $this->value === '0') {
             return [];
         }
 
@@ -225,7 +254,7 @@ class Filter implements FilterInterface
      * @param string $value
      * @return $this
      */
-    public function setValue(string $value): self
+    public function setValue(mixed $value): self
     {
         $this->value = $value;
         $condition = $this->baseCondition;
