@@ -278,6 +278,11 @@ class Table implements TableInterface
     public function getData(): array
     {
         if ($this->data === null && isset($this->model) && $this->model instanceof ModelInterface) {
+            if (Kernel::$activeDebugbar) {
+                $debugbarId = Debugbar::uuid();
+                Debugbar::startTime($debugbarId, 'Table: ' . $this->getId() . ' - read data');
+            }
+
             $this->data = $this->model->readAll(
                 $this->getConditions(),
                 null,
@@ -285,6 +290,10 @@ class Table implements TableInterface
                 (($this->getPage() - 1) * $this->getLimit()) . ',' . $this->getLimit(),
                 $this->getGroupBy()
             );
+
+            if (Kernel::$activeDebugbar) {
+                Debugbar::stopTime($debugbarId);
+            }
         }
 
         return $this->data ?? [];
@@ -301,7 +310,7 @@ class Table implements TableInterface
     {
         if (Kernel::$activeDebugbar) {
             $debugbarId = Debugbar::uuid();
-            Debugbar::startTime($debugbarId, 'Load table ' . $this->getId());
+            Debugbar::startTime($debugbarId, 'Table: ' . $this->getId() . ' - render');
         }
 
 
@@ -333,9 +342,16 @@ class Table implements TableInterface
         ob_start();
 
         $this->prepareDataCount();
+
+        if (Kernel::$activeDebugbar) {
+            $debugbarIdV = Debugbar::uuid();
+            Debugbar::startTime($debugbarIdV, 'Table: ' . $this->getId() . ' - render view');
+        }
+
         echo $this->viewClass->render($this);
 
         if (Kernel::$activeDebugbar) {
+            Debugbar::stopTime($debugbarIdV);
             Debugbar::stopTime($debugbarId);
         }
 
