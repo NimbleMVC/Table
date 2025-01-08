@@ -71,14 +71,21 @@
                 console.log('table reload', tableId, formData);
             }
 
-            return fetch(window.location.href, {
+            let url = window.location.href,
+                dataurl = $('#' + tableId).attr('data-url');
+
+            if (dataurl) {
+                url = dataurl;
+            }
+
+            return fetch(url, {
                 method: 'POST',
                 body: formData
             })
                 .then(response => response.text())
                 .then(html => {
                     if (settings.debug) {
-                        console.log('table reload response', tableId, [html], window.location.href);
+                        console.log('table reload response', tableId, [html], url);
                     }
 
                     const parser = new DOMParser(),

@@ -16,7 +16,7 @@ class Simple
         'main-div' => 'm-2',
         'header' => 'row position-relative',
         'table' => 'table table-striped m-0',
-        'table-div' => 'table-responsive-md',
+        'table-div' => 'table-responsive-md overflow-auto',
         'table-thead' => '',
         'table-thead-tr' => '',
         'table-tbody' => '',
@@ -60,7 +60,8 @@ class Simple
                     ->setContent($this->renderFooter())
             )
             ->setId($this->table->getId())
-            ->setClass(trim('table-module ' . self::$CLASSES['main-div']));
+            ->setClass(trim('table-module ' . self::$CLASSES['main-div']))
+            ->addAttribute('data-url', '/' . (new \Nimblephp\framework\Request())->getQuery('url'));
     }
 
     /**
