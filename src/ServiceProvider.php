@@ -9,6 +9,8 @@ use Nimblephp\debugbar\Debugbar;
 use Nimblephp\framework\Interfaces\ServiceProviderInterface;
 use Nimblephp\framework\Kernel;
 use Nimblephp\framework\ModuleRegister;
+use Nimblephp\twig\Twig;
+use Throwable;
 
 class ServiceProvider implements ServiceProviderInterface
 {
@@ -24,6 +26,13 @@ class ServiceProvider implements ServiceProviderInterface
 
         if (Kernel::$activeDebugbar) {
             Debugbar::$debugBar->addCollector(new MessagesCollector('Tables'));
+        }
+
+        if (ModuleRegister::moduleExistsInVendor('nimblephp/twig')) {
+            try {
+                Twig::addJsHeader('/assets/table.js');
+            } catch (Throwable) {
+            }
         }
     }
 
