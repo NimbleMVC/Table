@@ -103,6 +103,8 @@
 
                         const currentElement = document.getElementById(tableId);
 
+                        $('#' + tableId).trigger('ajaxTable.reload', [currentElement]);
+
                         if (currentElement) {
                             currentElement.innerHTML = newElement.innerHTML;
                         }
