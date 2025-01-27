@@ -93,7 +93,7 @@ class Filter implements FilterInterface
                 }
 
                 $content .= HtmlGenerator::createTag('select')
-                    ->setClass('form-select form-select-sm ajax-form')
+                    ->setClass('form-select form-select-sm ajax-form mb-2')
                     ->addAttribute('type', 'filter')
                     ->setName('filter-' . $this->getKey())
                     ->setContent($selectContent);
@@ -101,7 +101,7 @@ class Filter implements FilterInterface
                 break;
             case 'date':
                 $content .= HtmlGenerator::createTag('input')
-                    ->setClass('form-control form-control-sm ajax-form')
+                    ->setClass('form-control form-control-sm ajax-form mb-2')
                     ->addAttribute('type', 'date')
                     ->setName('filter-' . $this->getKey())
                     ->addAttribute('value', $this->getValue() ?? '');
@@ -111,7 +111,7 @@ class Filter implements FilterInterface
                 $title = false;
 
                 $checkbox = HtmlGenerator::createTag('input')
-                    ->setClass('form-check-input ajax-checkbox')
+                    ->setClass('form-check-input ajax-checkbox mb-2')
                     ->setName('filter-' . $this->getKey())
                     ->addAttribute('type', 'checkbox')
                     ->setId('FilterCheckbox_' . $this->getKey());
