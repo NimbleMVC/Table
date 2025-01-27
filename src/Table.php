@@ -200,7 +200,7 @@ class Table implements TableInterface
         }
 
         if (!is_null($id)) {
-            $this->setId($id);
+            $this->setId($id, false);
         }
     }
 
@@ -542,18 +542,21 @@ class Table implements TableInterface
     /**
      * Set table id
      * @param ?string $id
+     * @param bool $config
      * @return void
      */
-    public function setId(?string $id): void
+    public function setId(?string $id, bool $config = true): void
     {
         $this->id = $id;
 
         $this->configName = $id ? "table_{$id}_config" : '';
 
-        $this->readConfig();
-        $this->queryConfig();
-        $this->readConfig();
-        $this->saveConfig();
+        if ($config) {
+            $this->readConfig();
+            $this->queryConfig();
+            $this->readConfig();
+            $this->saveConfig();
+        }
     }
 
     /**
