@@ -1,15 +1,15 @@
 <?php
 
-namespace Nimblephp\table;
+namespace NimblePHP\Table;
 
 use DebugBar\DataCollector\MessagesCollector;
 use Krzysztofzylka\File\File;
-use Nimblephp\debugbar\Collectors\ModuleCollector;
-use Nimblephp\debugbar\Debugbar;
-use Nimblephp\framework\Interfaces\ServiceProviderInterface;
-use Nimblephp\framework\Kernel;
-use Nimblephp\framework\ModuleRegister;
-use Nimblephp\twig\Twig;
+use NimblePHP\debugbar\Collectors\ModuleCollector;
+use NimblePHP\debugbar\Debugbar;
+use NimblePHP\Framework\Interfaces\ServiceProviderInterface;
+use NimblePHP\Framework\Kernel;
+use NimblePHP\Framework\ModuleRegister;
+use NimblePHP\Twig\Twig;
 use Throwable;
 
 class ServiceProvider implements ServiceProviderInterface
@@ -18,7 +18,7 @@ class ServiceProvider implements ServiceProviderInterface
     public function register(): void
     {
         if (ModuleRegister::isset('nimblephp/migrations') && $_ENV['DATABASE']) {
-            $migrations = new \Nimblephp\migrations\Migrations(false, __DIR__ . '/migrations');
+            $migrations = new \NimblePHP\migrations\Migrations(false, __DIR__ . '/migrations');
             $migrations->runMigrations();
         }
 

@@ -1,22 +1,22 @@
 <?php
 
-namespace Nimblephp\table;
+namespace NimblePHP\Table;
 
 use krzysztofzylka\DatabaseManager\Condition;
 use krzysztofzylka\DatabaseManager\DatabaseManager;
 use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
-use Nimblephp\debugbar\Debugbar;
-use Nimblephp\framework\Cookie;
-use Nimblephp\framework\Exception\DatabaseException;
-use Nimblephp\framework\Exception\NimbleException;
-use Nimblephp\framework\Interfaces\ModelInterface;
-use Nimblephp\framework\Kernel;
-use Nimblephp\framework\ModuleRegister;
-use Nimblephp\framework\Request;
-use Nimblephp\table\Interfaces\ColumnInterface;
-use Nimblephp\table\Interfaces\FilterInterface;
-use Nimblephp\table\Interfaces\TableInterface;
-use Nimblephp\table\Template\Simple;
+use NimblePHP\debugbar\Debugbar;
+use NimblePHP\Framework\Cookie;
+use NimblePHP\Framework\Exception\DatabaseException;
+use NimblePHP\Framework\Exception\NimbleException;
+use NimblePHP\Framework\Interfaces\ModelInterface;
+use NimblePHP\Framework\Kernel;
+use NimblePHP\Framework\ModuleRegister;
+use NimblePHP\Framework\Request;
+use NimblePHP\Table\Interfaces\ColumnInterface;
+use NimblePHP\Table\Interfaces\FilterInterface;
+use NimblePHP\Table\Interfaces\TableInterface;
+use NimblePHP\Table\Template\Simple;
 
 /**
  * Initialize table

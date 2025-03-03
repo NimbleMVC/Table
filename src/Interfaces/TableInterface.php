@@ -1,12 +1,12 @@
 <?php
 
-namespace Nimblephp\table\Interfaces;
+namespace NimblePHP\Table\Interfaces;
 
 use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
-use Nimblephp\framework\Exception\DatabaseException;
-use Nimblephp\framework\Exception\NimbleException;
-use Nimblephp\framework\Interfaces\ModelInterface;
-use Nimblephp\table\Table;
+use NimblePHP\Framework\Exception\DatabaseException;
+use NimblePHP\Framework\Exception\NimbleException;
+use NimblePHP\Framework\Interfaces\ModelInterface;
+use NimblePHP\Table\Table;
 
 interface TableInterface
 {
