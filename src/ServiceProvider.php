@@ -2,10 +2,7 @@
 
 namespace NimblePHP\Table;
 
-use DebugBar\DataCollector\MessagesCollector;
 use Krzysztofzylka\File\File;
-use NimblePHP\debugbar\Collectors\ModuleCollector;
-use NimblePHP\debugbar\Debugbar;
 use NimblePHP\Framework\Interfaces\ServiceProviderInterface;
 use NimblePHP\Framework\Kernel;
 use NimblePHP\Framework\ModuleRegister;
@@ -23,10 +20,6 @@ class ServiceProvider implements ServiceProviderInterface
         }
 
         File::copy(__DIR__ . '/Resources/table.js', Kernel::$projectPath . '/public/assets/table.js');
-
-        if (Kernel::$activeDebugbar) {
-            Debugbar::$debugBar->addCollector(new MessagesCollector('Tables'));
-        }
 
         if (ModuleRegister::moduleExistsInVendor('nimblephp/twig')) {
             try {
