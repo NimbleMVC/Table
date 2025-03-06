@@ -59,7 +59,7 @@ class Simple
                     ->setClass(trim('table-footer ' . self::$CLASSES['table-footer']))
                     ->setContent($this->renderFooter())
             )
-            ->setId($this->table->getId())
+            ->setId($this->table->getId() ?? 'tableId')
             ->setClass(trim('table-module ' . self::$CLASSES['main-div']))
             ->addAttribute('data-url', '/' . (new \NimblePHP\Framework\Request())->getQuery('url'));
     }
