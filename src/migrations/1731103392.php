@@ -3,7 +3,7 @@
 use krzysztofzylka\DatabaseManager\Column;
 use krzysztofzylka\DatabaseManager\Enum\ColumnType;
 
-return new class extends \NimblePHP\migrations\AbstractMigration
+return new class extends \NimblePHP\Migrations\AbstractMigration
 {
 
     public function run()
