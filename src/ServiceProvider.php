@@ -15,7 +15,7 @@ class ServiceProvider implements ServiceProviderInterface
     public function register(): void
     {
         if (ModuleRegister::isset('nimblephp/migrations') && $_ENV['DATABASE']) {
-            $migrations = new \NimblePHP\migrations\Migrations(false, __DIR__ . '/migrations');
+            $migrations = new \NimblePHP\Migrations\Migrations(false, __DIR__ . '/migrations');
             $migrations->runMigrations();
         }
 
