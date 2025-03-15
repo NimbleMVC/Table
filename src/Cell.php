@@ -1,6 +1,6 @@
 <?php
 
-namespace Nimblephp\table;
+namespace NimblePHP\Table;
 
 class Cell
 {

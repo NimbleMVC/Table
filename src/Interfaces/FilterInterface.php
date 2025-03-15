@@ -1,8 +1,8 @@
 <?php
 
-namespace Nimblephp\table\Interfaces;
+namespace NimblePHP\Table\Interfaces;
 
-use Nimblephp\table\Table;
+use NimblePHP\Table\Table;
 
 /**
  * Filter interface

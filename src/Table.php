@@ -1,22 +1,21 @@
 <?php
 
-namespace Nimblephp\table;
+namespace NimblePHP\Table;
 
 use krzysztofzylka\DatabaseManager\Condition;
 use krzysztofzylka\DatabaseManager\DatabaseManager;
 use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
-use Nimblephp\debugbar\Debugbar;
-use Nimblephp\framework\Cookie;
-use Nimblephp\framework\Exception\DatabaseException;
-use Nimblephp\framework\Exception\NimbleException;
-use Nimblephp\framework\Interfaces\ModelInterface;
-use Nimblephp\framework\Kernel;
-use Nimblephp\framework\ModuleRegister;
-use Nimblephp\framework\Request;
-use Nimblephp\table\Interfaces\ColumnInterface;
-use Nimblephp\table\Interfaces\FilterInterface;
-use Nimblephp\table\Interfaces\TableInterface;
-use Nimblephp\table\Template\Simple;
+use NimblePHP\Framework\Cookie;
+use NimblePHP\Framework\Exception\DatabaseException;
+use NimblePHP\Framework\Exception\NimbleException;
+use NimblePHP\Framework\Interfaces\ModelInterface;
+use NimblePHP\Framework\Kernel;
+use NimblePHP\Framework\ModuleRegister;
+use NimblePHP\Framework\Request;
+use NimblePHP\Table\Interfaces\ColumnInterface;
+use NimblePHP\Table\Interfaces\FilterInterface;
+use NimblePHP\Table\Interfaces\TableInterface;
+use NimblePHP\Table\Template\Simple;
 
 /**
  * Initialize table
@@ -278,11 +277,6 @@ class Table implements TableInterface
     public function getData(): array
     {
         if ($this->data === null && isset($this->model) && $this->model instanceof ModelInterface) {
-            if (Kernel::$activeDebugbar) {
-                $debugbarId = Debugbar::uuid();
-                Debugbar::startTime($debugbarId, 'Table: ' . $this->getId() . ' - read data');
-            }
-
             $this->data = $this->model->readAll(
                 $this->getConditions(),
                 null,
@@ -290,10 +284,6 @@ class Table implements TableInterface
                 (($this->getPage() - 1) * $this->getLimit()) . ',' . $this->getLimit(),
                 $this->getGroupBy()
             );
-
-            if (Kernel::$activeDebugbar) {
-                Debugbar::stopTime($debugbarId);
-            }
         }
 
         return $this->data ?? [];
@@ -308,12 +298,6 @@ class Table implements TableInterface
      */
     public function render(): string
     {
-        if (Kernel::$activeDebugbar) {
-            $debugbarId = Debugbar::uuid();
-            Debugbar::startTime($debugbarId, 'Table: ' . $this->getId() . ' - render');
-        }
-
-
         $isSaveAjaxMode = $this->isAjax()
             && $this->request->getPost('table_action_id', false) === $this->getId();
 
@@ -342,50 +326,10 @@ class Table implements TableInterface
         ob_start();
 
         $this->prepareDataCount();
-
-        if (Kernel::$activeDebugbar) {
-            $debugbarIdV = Debugbar::uuid();
-            Debugbar::startTime($debugbarIdV, 'Table: ' . $this->getId() . ' - render view');
-        }
-
         echo $this->viewClass->render($this);
-
-        if (Kernel::$activeDebugbar) {
-            Debugbar::stopTime($debugbarIdV);
-            Debugbar::stopTime($debugbarId);
-        }
-
         echo '<script>$("#' . $this->getId() . '").ajaxTable()</script>';
 
-        $this->addDebug();
         return ob_get_clean();
-    }
-
-    protected function addDebug(): void
-    {
-        if (!Kernel::$activeDebugbar) {
-            return;
-        }
-
-        $table = [
-            'id' => $this->getId(),
-            'filters' => array_keys($this->filters),
-            'model' => $this->getModel() ? get_class($this->getModel()) : '',
-            'conditions' => $this->getConditions(),
-            'class' => $this->getClass(),
-            'actions' => $this->getActions(),
-            'group_by' => $this->getGroupBy(),
-            'order_by' => $this->getOrderBy(),
-            'page' => $this->getPage(),
-            'page_count' => $this->getPageCount(),
-            'ajax' => $this->isAjax() ? 'True' : 'False',
-            'limit' => $this->getLimit(),
-            'search' => $this->getSearch(),
-            'columns' => $this->getColumns(),
-            'sql' => $this->getModel() ? DatabaseManager::getLastSql() : ''
-        ];
-
-        Debugbar::$debugBar['Tables']->addMessage($table, $this->getId());
     }
 
     /**

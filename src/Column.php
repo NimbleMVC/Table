@@ -1,8 +1,8 @@
 <?php
 
-namespace Nimblephp\table;
+namespace NimblePHP\Table;
 
-use Nimblephp\table\Interfaces\ColumnInterface;
+use NimblePHP\Table\Interfaces\ColumnInterface;
 
 
 class Column implements ColumnInterface

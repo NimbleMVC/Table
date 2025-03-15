@@ -1,10 +1,10 @@
 <?php
 
-namespace Nimblephp\table;
+namespace NimblePHP\Table;
 
 use krzysztofzylka\DatabaseManager\Condition;
 use Krzysztofzylka\HtmlGenerator\HtmlGenerator;
-use Nimblephp\table\Interfaces\FilterInterface;
+use NimblePHP\Table\Interfaces\FilterInterface;
 
 class Filter implements FilterInterface
 {

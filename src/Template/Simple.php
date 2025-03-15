@@ -1,11 +1,11 @@
 <?php
 
-namespace Nimblephp\table\Template;
+namespace NimblePHP\Table\Template;
 
 use Krzysztofzylka\HtmlGenerator\HtmlGenerator;
-use Nimblephp\table\Column;
-use Nimblephp\table\Filter;
-use Nimblephp\table\Table;
+use NimblePHP\Table\Column;
+use NimblePHP\Table\Filter;
+use NimblePHP\Table\Table;
 
 class Simple
 {
@@ -35,7 +35,7 @@ class Simple
      * Render table
      * @param Table $table
      * @return string
-     * @throws \Nimblephp\framework\Exception\DatabaseException
+     * @throws \NimblePHP\Framework\Exception\DatabaseException
      */
     public function render(Table $table): string
     {
@@ -59,9 +59,9 @@ class Simple
                     ->setClass(trim('table-footer ' . self::$CLASSES['table-footer']))
                     ->setContent($this->renderFooter())
             )
-            ->setId($this->table->getId())
+            ->setId($this->table->getId() ?? 'tableId')
             ->setClass(trim('table-module ' . self::$CLASSES['main-div']))
-            ->addAttribute('data-url', '/' . (new \Nimblephp\framework\Request())->getQuery('url'));
+            ->addAttribute('data-url', '/' . (new \NimblePHP\Framework\Request())->getQuery('url'));
     }
 
     /**
@@ -160,7 +160,7 @@ class Simple
     /**
      * Render table body
      * @return string
-     * @throws \Nimblephp\framework\Exception\DatabaseException
+     * @throws \NimblePHP\Framework\Exception\DatabaseException
      */
     private function renderTableBody(): string
     {
