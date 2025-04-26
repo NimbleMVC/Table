@@ -22,7 +22,7 @@ class Simple
         'table-tbody' => '',
         'table-header' => 'd-flex flex-wrap justify-content-between mb-2',
         'action-div' => 'pt-1 col-12 col-md-auto mb-2 mb-md-0',
-        'action-button' => 'btn btn-primary w-100',
+        'action-button' => 'btn btn-primary me-2',
         'action-search-div' => 'col-12 col-md-auto d-flex justify-content-end',
         'action-search-input' => 'form-control me-2 form-control-sm w-100',
         'table-footer' => 'p-1 mt-2',
