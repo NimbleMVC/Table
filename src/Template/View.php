@@ -7,12 +7,16 @@ use NimblePHP\Framework\Exception\NotFoundException;
 class View extends \NimblePHP\Framework\View
 {
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         parent::__construct();
 
-        $this->viewPath = __DIR__ . '/resources/';
+        $this->viewPath = __DIR__ . '/../Resources/view/';
     }
+
     /**
      * Render view
      * @param string $viewName
@@ -24,6 +28,7 @@ class View extends \NimblePHP\Framework\View
     {
         ob_start();
         $this->render($viewName, $data);
+
         return ob_get_clean();
     }
 

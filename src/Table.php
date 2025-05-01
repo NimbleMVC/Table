@@ -26,15 +26,19 @@ class Table implements TableInterface
      * @var array|string[]
      */
     public static array $LANGUAGE = [
-        'search' => 'Search...'
+        'search' => 'Search...',
+        'show' => 'Show',
+        'records' => 'records',
+        'page' => 'Page',
+        'of' => 'of'
     ];
 
     /**
      * Layout
-     * empty (default, bootstrap5)
+     * empty (normal, professional, modern)
      * @var string
      */
-    public static string $layout = '';
+    public static string $layout = 'normal';
 
     /**
      * Columns
@@ -291,21 +295,21 @@ class Table implements TableInterface
             && $this->request->getPost('table_action_id', false) === $this->getId();
 
         if ($this->isAjax()) {
-//            if (!$_ENV['DATABASE']) {
-//                throw new NimbleException('The database must be enabled', 500);
-//            }
-//
-//            if (!ModuleRegister::isset('nimblephp/migrations')) {
-//                throw new NimbleException('The nimblephp/migrations module must be enabled', 500);
-//            }
-//
-//            $this->getAjaxConfig();
-//
-//            if ($isSaveAjaxMode) {
-//                $this->saveAjaxConfig();
-//            }
-//
-//            $this->getAjaxConfig();
+            if (!$_ENV['DATABASE']) {
+                throw new NimbleException('The database must be enabled', 500);
+            }
+
+            if (!ModuleRegister::isset('nimblephp/migrations')) {
+                throw new NimbleException('The nimblephp/migrations module must be enabled', 500);
+            }
+
+            $this->getAjaxConfig();
+
+            if ($isSaveAjaxMode) {
+                $this->saveAjaxConfig();
+            }
+
+            $this->getAjaxConfig();
         }
 
         foreach ($this->filters as $filter) {
@@ -315,7 +319,7 @@ class Table implements TableInterface
         ob_start();
 
         $this->prepareDataCount();
-        $template = new Template($this, 'normal');
+        $template = new Template($this, self::$layout);
         return $template->render();
     }
 

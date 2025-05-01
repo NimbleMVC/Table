@@ -1,0 +1,159 @@
+<?php
+use NimblePHP\Table\Column;
+use NimblePHP\Table\Filter;
+use NimblePHP\Table\Table;
+
+/** @var bool $isAjax */
+/** @var array $actions */
+/** @var array $columns */
+/** @var array $filters */
+/** @var array $data */
+/** @var array $lang */
+/** @var string $tableId */
+/** @var string $currentUrl */
+/** @var string $tableClasses */
+/** @var string $searchValue */
+/** @var int $pageCount */
+/** @var int $page */
+/** @var int $paginationStart */
+/** @var int $paginationEnd */
+/** @var Column $column */
+/** @var Table $tableInstance */
+/** @var Filter $filter */
+?>
+
+    <div id="<?= $tableId ?>" class="table-module my-4" data-url="<?= $currentUrl ?>" style="box-shadow: 0 5px 25px rgba(0,0,0,0.08); border-radius: 12px; overflow: hidden; background-color: #fff; border: 1px solid #edf2f7;">
+        <div class="table-header d-flex flex-wrap justify-content-between align-items-center" <?= $isAjax ? 'style="padding: 18px 24px; border-bottom: 1px solid #edf2f7; background-color: #f9fafb;"' : '' ?>>
+            <?php if ($isAjax): ?>
+                <?php if (!empty($actions)): ?>
+                    <div class="action-div col-12 col-md-auto mb-3 mb-md-0">
+                        <?php foreach ($actions as $action): ?>
+                            <a href="<?= $action['url'] ?>" class="btn btn-sm me-2<?= !empty($action['class']) ? ' ' . $action['class'] : ' btn-primary' ?>"
+                               style="border-radius: 6px; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; padding: 8px 16px; transition: all 0.2s ease-in-out; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+                                <?= $action['name'] ?>
+                            </a>
+                        <?php endforeach ?>
+                    </div>
+                <?php endif ?>
+
+                <div class="col-12 col-md-4 col-lg-3 ms-auto">
+                    <div class="input-group">
+                        <input class="ajax-form form-control"
+                               type="search" name="search" value="<?= $searchValue ?>"
+                               placeholder="<?= $lang['search'] ?>" aria-label="search"
+                               style="border-radius: 6px; border: 1px solid #e2e8f0; padding: 10px 16px; font-size: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05) inset;"/>
+                        <button class="btn btn-outline-secondary" type="button" style="border-radius: 0 6px 6px 0; border: 1px solid #e2e8f0; border-left: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            <?php endif ?>
+        </div>
+
+        <div class="table-responsive-md overflow-auto" style="max-height: 650px;">
+            <table class="table table-hover m-0<?= !empty($tableClasses) ? ' ' . $tableClasses : '' ?>" style="border-collapse: separate; border-spacing: 0;">
+                <thead>
+                <tr>
+                    <?php foreach ($columns as $column): ?>
+                        <th scope="col" style="position: sticky; top: 0; z-index: 10; background-color: #ffffff; font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.7px; border-bottom: 2px solid #4299e1; padding: 16px 20px; color: #2d3748; <?= trim($column->getStyleAsString()) ?>">
+                            <?= $column->getName() ?>
+                        </th>
+                    <?php endforeach ?>
+                </tr>
+                </thead>
+                <tbody>
+                <?php if (empty($data)): ?>
+                    <tr>
+                        <td colspan="<?= count($columns) ?>" class="text-center py-5" style="color: #718096; font-style: italic;">
+                            Brak danych do wyświetlenia
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($data as $row): ?>
+                        <tr style="transition: all 0.2s ease-in-out;">
+                            <?php foreach ($columns as $column): ?>
+                                <td style="padding: 14px 20px; border-bottom: 1px solid #edf2f7; font-size: 14px; vertical-align: middle; color: #2d3748; <?= $column->getStyleAsString() ?>">
+                                    <?= $tableInstance->prepareColumnValue($column, $row) ?>
+                                </td>
+                            <?php endforeach ?>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer p-0" style="padding: 18px 24px !important; background-color: #f9fafb; border-top: 1px solid #edf2f7;">
+            <div class="d-flex flex-wrap justify-content-between align-items-center">
+                <div class="my-2">
+                    <?php if ($isAjax): ?>
+                        <?php foreach ($filters as $filter): ?>
+                            <div class="me-2 d-inline-block">
+                                <?= $filter->render($tableInstance) ?>
+                            </div>
+                        <?php endforeach ?>
+                    <?php endif ?>
+                </div>
+                <div class="my-2">
+                    <?php if($isAjax && $pageCount > 1): ?>
+                        <div>
+                            <nav class="table-footer-pagination">
+                                <ul class="pagination justify-content-end m-0" style="gap: 5px;">
+                                    <?php if ($page > 1): ?>
+                                        <li class="page-item">
+                                            <a href="?page=1" class="page-link ajax-link" style="border-radius: 6px; color: #4a5568; font-weight: 600; font-size: 13px; padding: 8px 12px; border: 1px solid #e2e8f0;">&laquo; Pierwsza</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a href="?page=<?= $page - 1 ?>" class="page-link ajax-link" style="border-radius: 6px; color: #4a5568; font-weight: 600; font-size: 13px; padding: 8px 12px; border: 1px solid #e2e8f0;">&lsaquo;</a>
+                                        </li>
+                                    <?php endif ?>
+
+                                    <?php for ($i = $paginationStart; $i <= $paginationEnd; $i++): ?>
+                                        <li class="page-item<?= $page == $i ? ' active' : '' ?>">
+                                            <a href="?page=<?= $i ?>" class="page-link ajax-link"
+                                               style="border-radius: 6px; color: <?= $page == $i ? '#fff' : '#4a5568' ?>; background-color: <?= $page == $i ? '#4299e1' : '#fff' ?>; font-weight: 600; font-size: 13px; padding: 8px 14px; border: 1px solid <?= $page == $i ? '#4299e1' : '#e2e8f0' ?>; <?= $page == $i ? 'box-shadow: 0 2px 5px rgba(66,153,225,0.4);' : '' ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor ?>
+
+                                    <?php if ($page < $pageCount): ?>
+                                        <li class="page-item">
+                                            <a href="?page=<?= $page + 1 ?>" class="page-link ajax-link" style="border-radius: 6px; color: #4a5568; font-weight: 600; font-size: 13px; padding: 8px 12px; border: 1px solid #e2e8f0;">&rsaquo;</a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a href="?page=<?= $pageCount ?>" class="page-link ajax-link" style="border-radius: 6px; color: #4a5568; font-weight: 600; font-size: 13px; padding: 8px 12px; border: 1px solid #e2e8f0;">Ostatnia &raquo;</a>
+                                        </li>
+                                    <?php endif ?>
+                                </ul>
+                            </nav>
+                        </div>
+                    <?php endif ?>
+
+                    <?php if (!empty($data)): ?>
+                        <div class="text-muted fs-sm mt-2" style="font-size: 13px; color: #718096;">
+                            <?= $lang['show'] ?> <?= count($data) ?> <?= $lang['records'] ?> <?= $pageCount > 1 ? '(' . $lang['page'] . ' ' . $page . ' ' . $lang['of'] . ' ' . $pageCount . ')' : '' ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php if ($tableId): ?>
+    <script>
+        $(document).ready(function() {
+            $("#<?= $tableId ?>").ajaxTable();
+
+            // Efekt hover dla wierszy tabeli
+            $("#<?= $tableId ?> tbody tr").hover(
+                function() {
+                    $(this).css('background-color', '#f7fafc');
+                },
+                function() {
+                    $(this).css('background-color', '');
+                }
+            );
+        });
+    </script>
+<?php endif ?>

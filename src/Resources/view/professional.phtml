@@ -1,0 +1,110 @@
+<?php
+use NimblePHP\Table\Column;
+use NimblePHP\Table\Filter;
+use NimblePHP\Table\Table;
+
+/** @var bool $isAjax */
+/** @var array $actions */
+/** @var array $columns */
+/** @var array $filters */
+/** @var array $data */
+/** @var array $lang */
+/** @var string $tableId */
+/** @var string $currentUrl */
+/** @var string $tableClasses */
+/** @var string $searchValue */
+/** @var int $pageCount */
+/** @var int $page */
+/** @var int $paginationStart */
+/** @var int $paginationEnd */
+/** @var Column $column */
+/** @var Table $tableInstance */
+/** @var Filter $filter */
+?>
+
+    <div id="<?= $tableId ?>" class="table-module m-2" data-url="<?= $currentUrl ?>" style="box-shadow: 0 0 15px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; background-color: #fff;">
+        <div class="table-header d-flex flex-wrap justify-content-between mb-2" style="padding: 16px; border-bottom: 1px solid #f0f0f0;">
+            <?php if ($isAjax): ?>
+                <?php if (!empty($actions)): ?>
+                    <div class="action-div pt-1 col-12 col-md-auto mb-2 mb-md-0">
+                        <?php foreach ($actions as $action): ?>
+                            <a href="<?= $action['url'] ?>" class="btn btn-sm btn-primary me-2<?= !empty($action['class']) ? ' ' . $action['class'] : '' ?>" style="border-radius: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s ease-in-out;">
+                                <?= $action['name'] ?>
+                            </a>
+                        <?php endforeach ?>
+                    </div>
+                <?php endif ?>
+
+                <div class="col-12 col-md-auto d-flex justify-content-end">
+                    <input class="ajax-form form-control me-2 form-control-sm w-100"
+                           type="search" name="search" value="<?= $searchValue ?>"
+                           placeholder="<?= $lang['search'] ?>" aria-label="search"
+                           style="border-radius: 4px; border: 1px solid #e2e8f0; padding: 8px 12px; font-size: 14px;"/>
+                </div>
+            <?php endif ?>
+        </div>
+        <div class="table-responsive-md overflow-auto" style="max-height: 600px;">
+            <table class="table table-striped m-0<?= !empty($tableClasses) ? ' ' . $tableClasses : '' ?>" style="border-collapse: separate; border-spacing: 0;">
+                <thead>
+                <tr style="background-color: #f8f9fa;">
+                    <?php foreach ($columns as $column): ?>
+                        <th scope="col" style="position: sticky; top: 0; z-index: 10; background-color: #f8f9fa; font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; border-bottom: 2px solid #dee2e6; padding: 12px 15px; color: #495057; <?= trim($column->getStyleAsString()) ?>">
+                            <?= $column->getName() ?>
+                        </th>
+                    <?php endforeach ?>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($data as $row): ?>
+                    <tr style="transition: background-color 0.15s ease-in-out; hover:background-color: #f1f5f9;">
+                        <?php foreach ($columns as $column): ?>
+                            <td style="padding: 12px 15px; border-bottom: 1px solid #e9ecef; font-size: 14px; vertical-align: middle; <?= $column->getStyleAsString() ?>">
+                                <?= $tableInstance->prepareColumnValue($column, $row) ?>
+                            </td>
+                        <?php endforeach ?>
+                    </tr>
+                <?php endforeach ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-footer p-1 mt-2" style="padding: 16px !important; background-color: #fcfcfc; border-top: 1px solid #f0f0f0;">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <?php if ($isAjax): ?>
+                        <?php foreach ($filters as $filter): ?>
+                            <?= $filter->render($tableInstance) ?>
+                        <?php endforeach ?>
+                    <?php endif ?>
+                </div>
+                <div>
+                    <?php if($isAjax && $pageCount > 1): ?>
+                        <div>
+                            <nav class="table-footer-pagination">
+                                <ul class="pagination justify-content-end m-0 pagination-sm" style="gap: 4px;">
+                                    <?php if ($page > 1): ?>
+                                        <li class="page-item">
+                                            <a href="?page=<?= $page - 1 ?>" class="page-link ajax-link" style="border-radius: 4px; color: #555; font-weight: 500;">&laquo;</a>
+                                        </li>
+                                    <?php endif ?>
+                                    <?php for ($i = $paginationStart; $i <= $paginationEnd; $i++): ?>
+                                        <li class="page-item<?= $page == $i ? ' active' : '' ?>">
+                                            <a href="?page=<?= $i ?>" class="page-link ajax-link" style="border-radius: 4px; color: <?= $page == $i ? '#fff' : '#555' ?>; font-weight: 500;"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor ?>
+                                    <?php if ($page < $pageCount): ?>
+                                        <li class="page-item">
+                                            <a href="?page=<?= $page + 1 ?>" class="page-link ajax-link" style="border-radius: 4px; color: #555; font-weight: 500;">&raquo;</a>
+                                        </li>
+                                    <?php endif ?>
+                                </ul>
+                            </nav>
+                        </div>
+                    <?php endif ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php if ($tableId): ?>
+    <script>$("#<?= $tableId ?>").ajaxTable()</script>
+<?php endif ?>

@@ -5,7 +5,6 @@ namespace NimblePHP\Table\Template;
 use NimblePHP\Framework\Exception\DatabaseException;
 use NimblePHP\Framework\Exception\NotFoundException;
 use NimblePHP\Framework\Request;
-use NimblePHP\Table\Interfaces\ColumnInterface;
 use NimblePHP\Table\Table;
 
 class Template
@@ -34,7 +33,8 @@ class Template
      * @param Table $tableInstance
      * @param string $templateName
      */
-    public function __construct(Table $tableInstance, string $templateName) {
+    public function __construct(Table $tableInstance, string $templateName)
+    {
         $this->tableInstance = $tableInstance;
         $this->templateName = $templateName;
         $this->currentUrl = (new Request())->getQuery('url');
