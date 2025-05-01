@@ -16,6 +16,7 @@ use NimblePHP\Table\Interfaces\ColumnInterface;
 use NimblePHP\Table\Interfaces\FilterInterface;
 use NimblePHP\Table\Interfaces\TableInterface;
 use NimblePHP\Table\Template\Simple;
+use NimblePHP\Table\Template\Template;
 
 /**
  * Initialize table
@@ -302,21 +303,21 @@ class Table implements TableInterface
             && $this->request->getPost('table_action_id', false) === $this->getId();
 
         if ($this->isAjax()) {
-            if (!$_ENV['DATABASE']) {
-                throw new NimbleException('The database must be enabled', 500);
-            }
-
-            if (!ModuleRegister::isset('nimblephp/migrations')) {
-                throw new NimbleException('The nimblephp/migrations module must be enabled', 500);
-            }
-
-            $this->getAjaxConfig();
-
-            if ($isSaveAjaxMode) {
-                $this->saveAjaxConfig();
-            }
-
-            $this->getAjaxConfig();
+//            if (!$_ENV['DATABASE']) {
+//                throw new NimbleException('The database must be enabled', 500);
+//            }
+//
+//            if (!ModuleRegister::isset('nimblephp/migrations')) {
+//                throw new NimbleException('The nimblephp/migrations module must be enabled', 500);
+//            }
+//
+//            $this->getAjaxConfig();
+//
+//            if ($isSaveAjaxMode) {
+//                $this->saveAjaxConfig();
+//            }
+//
+//            $this->getAjaxConfig();
         }
 
         foreach ($this->filters as $filter) {
@@ -326,10 +327,8 @@ class Table implements TableInterface
         ob_start();
 
         $this->prepareDataCount();
-        echo $this->viewClass->render($this);
-        echo '<script>$("#' . $this->getId() . '").ajaxTable()</script>';
-
-        return ob_get_clean();
+        $template = new Template($this, 'normal');
+        return $template->render();
     }
 
     /**
