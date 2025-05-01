@@ -41,12 +41,17 @@ class Column implements ColumnInterface
     /**
      * Create column
      * @param string $key
+     * @param string|null $name
      * @return ColumnInterface
      */
-    public static function create(string $key): ColumnInterface
+    public static function create(string $key, ?string $name = null): ColumnInterface
     {
         $column = new Column();
         $column->setKey($key);
+
+        if (!is_null($name)) {
+            $column->setName($name);
+        }
 
         return $column;
     }
