@@ -3,19 +3,16 @@
 namespace NimblePHP\Table;
 
 use krzysztofzylka\DatabaseManager\Condition;
-use krzysztofzylka\DatabaseManager\DatabaseManager;
 use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
 use NimblePHP\Framework\Cookie;
 use NimblePHP\Framework\Exception\DatabaseException;
 use NimblePHP\Framework\Exception\NimbleException;
 use NimblePHP\Framework\Interfaces\ModelInterface;
-use NimblePHP\Framework\Kernel;
 use NimblePHP\Framework\ModuleRegister;
 use NimblePHP\Framework\Request;
 use NimblePHP\Table\Interfaces\ColumnInterface;
 use NimblePHP\Table\Interfaces\FilterInterface;
 use NimblePHP\Table\Interfaces\TableInterface;
-use NimblePHP\Table\Template\Simple;
 use NimblePHP\Table\Template\Template;
 
 /**
@@ -38,11 +35,6 @@ class Table implements TableInterface
      * @var string
      */
     public static string $layout = '';
-
-    /**
-     * View class
-     */
-    protected $viewClass = null;
 
     /**
      * Columns
@@ -194,10 +186,6 @@ class Table implements TableInterface
 
         $this->request = new Request();
         $this->cookie = new Cookie();
-
-        if (is_null($this->viewClass)) {
-            $this->viewClass = new Simple();
-        }
 
         if (!is_null($id)) {
             $this->setId($id, false);
