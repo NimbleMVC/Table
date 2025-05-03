@@ -41,6 +41,12 @@ class Table implements TableInterface
     public static string $layout = 'normal';
 
     /**
+     * Current table layout
+     * @var string|null
+     */
+    public ?string $currentLayout = null;
+
+    /**
      * Columns
      * @var array
      */
@@ -319,7 +325,7 @@ class Table implements TableInterface
         ob_start();
 
         $this->prepareDataCount();
-        $template = new Template($this, self::$layout);
+        $template = new Template($this, $this->currentLayout ?? self::$layout);
         return $template->render();
     }
 
@@ -815,6 +821,16 @@ class Table implements TableInterface
     public function getFilters(): array
     {
         return $this->filters;
+    }
+
+    /**
+     * Set current table layout
+     * @param string $layout
+     * @return void
+     */
+    public function setLayout(string $layout): void
+    {
+        $this->currentLayout = $layout;
     }
 
 }
