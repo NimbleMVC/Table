@@ -3,19 +3,17 @@
 namespace NimblePHP\Table;
 
 use krzysztofzylka\DatabaseManager\Condition;
-use krzysztofzylka\DatabaseManager\DatabaseManager;
 use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
 use NimblePHP\Framework\Cookie;
 use NimblePHP\Framework\Exception\DatabaseException;
 use NimblePHP\Framework\Exception\NimbleException;
 use NimblePHP\Framework\Interfaces\ModelInterface;
-use NimblePHP\Framework\Kernel;
 use NimblePHP\Framework\ModuleRegister;
 use NimblePHP\Framework\Request;
 use NimblePHP\Table\Interfaces\ColumnInterface;
 use NimblePHP\Table\Interfaces\FilterInterface;
 use NimblePHP\Table\Interfaces\TableInterface;
-use NimblePHP\Table\Template\Simple;
+use NimblePHP\Table\Template\Template;
 
 /**
  * Initialize table
@@ -28,20 +26,25 @@ class Table implements TableInterface
      * @var array|string[]
      */
     public static array $LANGUAGE = [
-        'search' => 'Search...'
+        'search' => 'Search...',
+        'show' => 'Show',
+        'records' => 'records',
+        'page' => 'Page',
+        'of' => 'of'
     ];
 
     /**
      * Layout
-     * empty (default, bootstrap5)
+     * empty (normal, professional, modern)
      * @var string
      */
-    public static string $layout = '';
+    public static string $layout = 'normal';
 
     /**
-     * View class
+     * Current table layout
+     * @var string|null
      */
-    protected $viewClass = null;
+    public ?string $currentLayout = null;
 
     /**
      * Columns
@@ -194,10 +197,6 @@ class Table implements TableInterface
         $this->request = new Request();
         $this->cookie = new Cookie();
 
-        if (is_null($this->viewClass)) {
-            $this->viewClass = new Simple();
-        }
-
         if (!is_null($id)) {
             $this->setId($id, false);
         }
@@ -326,10 +325,8 @@ class Table implements TableInterface
         ob_start();
 
         $this->prepareDataCount();
-        echo $this->viewClass->render($this);
-        echo '<script>$("#' . $this->getId() . '").ajaxTable()</script>';
-
-        return ob_get_clean();
+        $template = new Template($this, $this->currentLayout ?? self::$layout);
+        return $template->render();
     }
 
     /**
@@ -824,6 +821,16 @@ class Table implements TableInterface
     public function getFilters(): array
     {
         return $this->filters;
+    }
+
+    /**
+     * Set current table layout
+     * @param string $layout
+     * @return void
+     */
+    public function setLayout(string $layout): void
+    {
+        $this->currentLayout = $layout;
     }
 
 }

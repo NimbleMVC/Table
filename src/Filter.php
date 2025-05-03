@@ -84,7 +84,7 @@ class Filter implements FilterInterface
                     foreach ($this->getContent() as $key => $value) {
                         $option = HtmlGenerator::createTag('option')->setContent($value)->addAttribute('value', $key);
 
-                        if ($this->getValue() === $key) {
+                        if ((string)$this->getValue() === (string)$key) {
                             $option->addAttribute('selected', 'selected');
                         }
 
@@ -260,27 +260,23 @@ class Filter implements FilterInterface
         $condition = $this->baseCondition;
 
         foreach ($condition as $conditionKey => $conditionValue) {
-            if ($conditionValue === '%VALUE%') {
-                if ($value === '%ALL%') {
-                    unset($condition[$conditionKey]);
-                    continue;
-                }
-
-                $condition[$conditionKey] = $this->getValue();
+            if ($value === '%ALL%') {
+                unset($condition[$conditionKey]);
+                continue;
+            } elseif (!$conditionValue instanceof Condition && str_contains($conditionValue, '%VALUE%')) {
+                $condition[$conditionKey] = str_replace('%VALUE%', $this->getValue(), $conditionValue->getValue());
             } elseif ($conditionValue instanceof Condition) {
-                if ($conditionValue->getValue() === '%VALUE%') {
-                    if (empty(trim($value))) {
-                        unset($condition[$conditionKey]);
-                        continue;
-                    }
-
-                    $condition[$conditionKey] = new Condition($conditionValue->getColumn(true), $conditionValue->getOperator(), $value);
+                if (str_contains($conditionValue->getValue(), '%VALUE%')) {
+                    $condition[$conditionKey] = new Condition(
+                        $conditionValue->getColumn(true),
+                        $conditionValue->getOperator(),
+                        str_replace('%VALUE%', $this->getValue(), $conditionValue->getValue())
+                    );
                 }
             }
         }
 
         $this->condition = $condition;
-
         return $this;
     }
 
