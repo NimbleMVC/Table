@@ -260,12 +260,10 @@ class Filter implements FilterInterface
         $condition = $this->baseCondition;
 
         foreach ($condition as $conditionKey => $conditionValue) {
-            if (!$conditionValue instanceof Condition && str_contains($conditionValue, '%VALUE%')) {
-                if ($value === '%ALL%') {
-                    unset($condition[$conditionKey]);
-                    continue;
-                }
-
+            if ($value === '%ALL%') {
+                unset($condition[$conditionKey]);
+                continue;
+            } elseif (!$conditionValue instanceof Condition && str_contains($conditionValue, '%VALUE%')) {
                 $condition[$conditionKey] = str_replace('%VALUE%', $this->getValue(), $conditionValue->getValue());
             } elseif ($conditionValue instanceof Condition) {
                 if (str_contains($conditionValue->getValue(), '%VALUE%')) {
