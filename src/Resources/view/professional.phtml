@@ -23,7 +23,7 @@ use NimblePHP\Table\Table;
 ?>
 
     <div id="<?= $tableId ?>" class="table-module m-2" data-url="<?= $currentUrl ?>" style="box-shadow: 0 0 15px rgba(0,0,0,0.05); border-radius: 8px; overflow: hidden; background-color: #fff;">
-        <div class="table-header d-flex flex-wrap justify-content-between mb-2" style="padding: 16px; border-bottom: 1px solid #f0f0f0;">
+        <div class="table-header d-flex flex-wrap justify-content-between" style="padding: 16px; border-bottom: 1px solid #f0f0f0;">
             <?php if ($isAjax): ?>
                 <?php if (!empty($actions)): ?>
                     <div class="action-div pt-1 col-12 col-md-auto mb-2 mb-md-0">
