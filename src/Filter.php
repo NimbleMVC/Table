@@ -4,6 +4,7 @@ namespace NimblePHP\Table;
 
 use krzysztofzylka\DatabaseManager\Condition;
 use Krzysztofzylka\HtmlGenerator\HtmlGenerator;
+use NimblePHP\Framework\Log;
 use NimblePHP\Table\Interfaces\FilterInterface;
 
 class Filter implements FilterInterface
@@ -264,7 +265,7 @@ class Filter implements FilterInterface
                 unset($condition[$conditionKey]);
                 continue;
             } elseif (!$conditionValue instanceof Condition && str_contains($conditionValue, '%VALUE%')) {
-                $condition[$conditionKey] = str_replace('%VALUE%', $this->getValue(), $conditionValue->getValue());
+                $condition[$conditionKey] = str_replace('%VALUE%', $this->getValue(), $conditionValue);
             } elseif ($conditionValue instanceof Condition) {
                 if (str_contains($conditionValue->getValue(), '%VALUE%')) {
                     $condition[$conditionKey] = new Condition(
@@ -277,6 +278,7 @@ class Filter implements FilterInterface
         }
 
         $this->condition = $condition;
+
         return $this;
     }
 
