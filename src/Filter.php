@@ -123,7 +123,7 @@ class Filter implements FilterInterface
 
                 $content .= HtmlGenerator::createTag('div')
                     ->setClass('form-check')
-                    ->addAttribute('style', 'border: 1px solid rgb(222, 226, 230); border-radius: 5px; padding: 2px; padding-left: 32px; padding-right: 7px;')
+                    ->addAttribute('style', 'border: 1px solid rgb(222, 226, 230); border-radius: 5px; padding: 2px; padding-left: 32px; padding-right: 7px; position: relative; ' . (Table::$layout === 'modern' ? 'top: -7px;' : ''))
                     ->setContent(
                         $checkbox
                         . HtmlGenerator::createTag('label')
