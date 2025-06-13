@@ -52,6 +52,13 @@
                 </tr>
             </thead>
             <tbody>
+            <?php if (empty($data)): ?>
+                <tr>
+                    <td colspan="<?= count($columns) ?>" class="text-center fst-italic text-muted py-5">
+                        Brak danych do wyświetlenia
+                    </td>
+                </tr>
+            <?php else: ?>
                 <?php foreach ($data as $row): ?>
                     <tr>
                         <?php foreach ($columns as $column): ?>
@@ -61,6 +68,7 @@
                         <?php endforeach ?>
                     </tr>
                 <?php endforeach ?>
+            <?php endif; ?>
             </tbody>
         </table>
     </div>
