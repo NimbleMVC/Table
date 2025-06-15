@@ -326,6 +326,13 @@ class Table implements TableInterface
 
         $this->prepareDataCount();
         $template = new Template($this, $this->currentLayout ?? self::$layout);
+
+        if ($isSaveAjaxMode) {
+            ob_clean();
+            echo $template->render();
+            exit;
+        }
+
         return $template->render();
     }
 
