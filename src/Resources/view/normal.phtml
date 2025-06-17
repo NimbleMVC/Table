@@ -87,6 +87,11 @@
                         <nav class="table-footer-pagination">
                             <ul class="pagination justify-content-end m-0 pagination-sm">
                                 <?php if ($page > 1): ?>
+                                    <?php if ($page > 3): ?>
+                                        <li class="page-item">
+                                            <a href="?page=1" class="page-link ajax-link">&laquo;&laquo;</a>
+                                        </li>
+                                    <?php endif ?>
                                     <li class="page-item">
                                         <a href="?page=<?= $page - 1 ?>" class="page-link ajax-link">&laquo;</a>
                                     </li>
@@ -98,8 +103,13 @@
                                 <?php endfor ?>
                                 <?php if ($page < $pageCount): ?>
                                     <li class="page-item">
-                                       <a href="?page=<?= $page + 1 ?>" class="page-link ajax-link">&raquo;</a>
+                                        <a href="?page=<?= $page + 1 ?>" class="page-link ajax-link">&raquo;</a>
                                     </li>
+                                    <?php if ($page < $pageCount - 3): ?>
+                                        <li class="page-item">
+                                            <a href="?page=<?= $pageCount ?>" class="page-link ajax-link">&raquo;&raquo;</a>
+                                        </li>
+                                    <?php endif ?>
                                 <?php endif ?>
                             </ul>
                         </nav>
