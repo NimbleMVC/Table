@@ -55,7 +55,7 @@
             <?php if (empty($data)): ?>
                 <tr>
                     <td colspan="<?= count($columns) ?>" class="text-center fst-italic text-muted py-5">
-                        Brak danych do wyświetlenia
+                        <?= $lang['empty_data'] ?>
                     </td>
                 </tr>
             <?php else: ?>

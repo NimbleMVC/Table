@@ -30,7 +30,8 @@ class Table implements TableInterface
         'show' => 'Show',
         'records' => 'records',
         'page' => 'Page',
-        'of' => 'of'
+        'of' => 'of',
+        'empty_data' => 'No data to display'
     ];
 
     /**
@@ -199,6 +200,25 @@ class Table implements TableInterface
 
         if (!is_null($id)) {
             $this->setId($id, false);
+        }
+    }
+
+    /**
+     * Change language
+     * @param string $lang
+     * @return void
+     */
+    public static function changeLanguage(string $lang): void
+    {
+        if ($lang === 'pl') {
+            self::$LANGUAGE = [
+                'search' => 'Wyszukaj...',
+                'show' => 'Pokaż',
+                'records' => 'rekordów',
+                'page' => 'Strona',
+                'of' => 'z',
+                'empty_data' => 'Brak danych do wyświetlenia'
+            ];
         }
     }
 
