@@ -267,12 +267,14 @@ class Filter implements FilterInterface
             } elseif (!$conditionValue instanceof Condition && str_contains($conditionValue, '%VALUE%')) {
                 $condition[$conditionKey] = str_replace('%VALUE%', $this->getValue(), $conditionValue);
             } elseif ($conditionValue instanceof Condition) {
-                if (str_contains($conditionValue->getValue(), '%VALUE%')) {
-                    $condition[$conditionKey] = new Condition(
-                        $conditionValue->getColumn(true),
-                        $conditionValue->getOperator(),
-                        str_replace('%VALUE%', $this->getValue(), $conditionValue->getValue())
-                    );
+                if (!is_array($conditionValue->getValue())) {
+                    if (str_contains($conditionValue->getValue(), '%VALUE%')) {
+                        $condition[$conditionKey] = new Condition(
+                            $conditionValue->getColumn(true),
+                            $conditionValue->getOperator(),
+                            str_replace('%VALUE%', $this->getValue(), $conditionValue->getValue())
+                        );
+                    }
                 }
             }
         }
