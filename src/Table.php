@@ -84,6 +84,18 @@ class Table implements TableInterface
     protected bool $ajax = false;
 
     /**
+     * Ajax action
+     * @var bool
+     */
+    protected bool $ajaxAction = false;
+
+    /**
+     * Ajax action key
+     * @var string|null
+     */
+    protected ?string $ajaxActionKey = null;
+
+    /**
      * Limit
      * @var int
      */
@@ -340,6 +352,10 @@ class Table implements TableInterface
 
         foreach ($this->filters as $filter) {
             $this->conditions = array_merge($this->conditions, $filter->getCondition());
+        }
+
+        if ($this->hasAjaxAction()) {
+            $this->generateAjaxAction();
         }
 
         ob_start();
@@ -704,8 +720,12 @@ class Table implements TableInterface
      * @param string $class
      * @return $this
      */
-    public function addAction(string $name, string $url, string $class=''): self
+    public function addAction(string $name, string $url, string $class = '', bool $ajaxAction = false): self
     {
+        if ($ajaxAction) {
+            $class .= ' ajax-action-button';
+        }
+
         $this->actions[] = [
             'name' => $name,
             'url' => $url,
@@ -858,6 +878,67 @@ class Table implements TableInterface
     public function setLayout(string $layout): void
     {
         $this->currentLayout = $layout;
+    }
+
+    /**
+     * Set ajax action
+     * @param bool $ajaxAction
+     * @return self
+     */
+    public function setAjaxAction(bool $ajaxAction = true): self
+    {
+        $this->ajaxAction = $ajaxAction;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasAjaxAction(): bool
+    {
+        return $this->ajaxAction;
+    }
+
+    /**
+     * Set ajax action key
+     * @param ?string $key
+     * @return $this
+     */
+    public function setAjaxActionKey(?string $key): self
+    {
+        $this->ajaxActionKey = $key;
+
+        return $this;
+    }
+
+    /**
+     * Get ajax action key
+     * @return array
+     */
+    public function getAjaxActionKey(): array
+    {
+        if (is_null($this->ajaxActionKey)) {
+            $this->setAjaxActionKey($this->model->getTableInstance()->getName() . '.id');
+        }
+
+        return explode('.', $this->ajaxActionKey, 2);
+    }
+
+    /**
+     * Generate ajax action
+     * @return void
+     */
+    private function generateAjaxAction(): void
+    {
+        $width = '30px';
+        $actionColumn = Column::create(':action_checkbox_ajax:', '')
+            ->setStyle(['width' => $width, 'min-width' => $width, 'padding-right' => '10px', 'padding-top' => '10px', 'position' => 'relative'])
+            ->setValue(function (Cell $cell) {
+                return '<input type="checkbox" style="position: absolute; top: 12px;" class="ajax-action-checkbox" value="' . $cell->data[$this->getAjaxActionKey()[0]][$this->getAjaxActionKey()[1]] . '" />';
+            });
+
+        $this->columns = [$actionColumn] + $this->columns;
     }
 
 }
