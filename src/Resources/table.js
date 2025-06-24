@@ -42,7 +42,24 @@
 
                 $table.on('change', '.ajax-checkbox', function (event) {
                     methods._submitFormData(this);
-                })
+                });
+
+                $table.on('click', '.ajax-action-button', function (event) {
+                    event.preventDefault();
+
+                    const selectedValues = $table.find('.ajax-action-checkbox:checked').map(function() {return $(this).val();}).get().join(','),
+                        $button = $(this),
+                        originalHref = $button.attr('href'),
+                        simulatedHref = originalHref + '/' + selectedValues;
+
+                    $button.attr('href', simulatedHref);
+
+                    setTimeout(() => {
+                        if (originalHref) {
+                            $button.attr('href', originalHref);
+                        }
+                    }, 100);
+                });
             });
         },
         reload: function (callback) {
