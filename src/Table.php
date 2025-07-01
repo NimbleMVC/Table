@@ -934,6 +934,7 @@ class Table implements TableInterface
         $width = '30px';
         $actionColumn = Column::create(':action_checkbox_ajax:', '')
             ->setStyle(['width' => $width, 'min-width' => $width, 'padding-right' => '10px', 'padding-top' => '10px', 'position' => 'relative'])
+            ->setSearch(false)
             ->setValue(function (Cell $cell) {
                 return '<input type="checkbox" style="position: absolute; top: 12px;" class="ajax-action-checkbox" value="' . $cell->data[$this->getAjaxActionKey()[0]][$this->getAjaxActionKey()[1]] . '" />';
             });
