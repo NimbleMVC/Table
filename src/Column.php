@@ -39,6 +39,12 @@ class Column implements ColumnInterface
     protected array $style = [];
 
     /**
+     * Sortable
+     * @var bool
+     */
+    protected bool $sortable = true;
+
+    /**
      * Create column
      * @param string $key
      * @param string|null $name
@@ -159,6 +165,27 @@ class Column implements ColumnInterface
     public function getStyle(): array
     {
         return $this->style;
+    }
+
+    /**
+     * Set sortable
+     * @param bool $sortable
+     * @return ColumnInterface
+     */
+    public function setSortable(bool $sortable): ColumnInterface
+    {
+        $this->sortable = $sortable;
+
+        return $this;
+    }
+
+    /**
+     * Is sortable
+     * @return bool
+     */
+    public function isSortable(): bool
+    {
+        return $this->sortable;
     }
 
     /**

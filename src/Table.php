@@ -199,6 +199,12 @@ class Table implements TableInterface
     protected array $filters = [];
 
     /**
+     * Column is sortable
+     * @var bool
+     */
+    protected bool $sortable = true;
+
+    /**
      * Initialize
      */
     public function __construct(?string $id = null)
@@ -232,6 +238,27 @@ class Table implements TableInterface
                 'empty_data' => 'Brak danych do wyświetlenia'
             ];
         }
+    }
+
+    /**
+     * Set sortable
+     * @param bool $sortable
+     * @return TableInterface
+     */
+    public function setSortable(bool $sortable): TableInterface
+    {
+        $this->sortable = $sortable;
+
+        return $this;
+    }
+
+    /**
+     * Is sortable
+     * @return bool
+     */
+    public function isSortable(): bool
+    {
+        return $this->sortable;
     }
 
     /**
@@ -935,6 +962,7 @@ class Table implements TableInterface
         $actionColumn = Column::create(':action_checkbox_ajax:', '')
             ->setStyle(['width' => $width, 'min-width' => $width, 'padding-right' => '10px', 'padding-top' => '10px', 'position' => 'relative'])
             ->setSearch(false)
+            ->setSortable(false)
             ->setValue(function (Cell $cell) {
                 return '<input type="checkbox" style="position: absolute; top: 12px;" class="ajax-action-checkbox" value="' . $cell->data[$this->getAjaxActionKey()[0]][$this->getAjaxActionKey()[1]] . '" />';
             });

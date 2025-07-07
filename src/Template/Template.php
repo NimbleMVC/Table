@@ -66,6 +66,7 @@ class Template
                 'tableInstance' => $this->tableInstance,
                 'pageCount' => $this->tableInstance->getPageCount(),
                 'page' => $this->tableInstance->getPage(),
+                'isSortable' => $this->tableInstance->isSortable(),
                 'paginationStart' => max(1, $this->tableInstance->getPage() - 3),
                 'paginationEnd' => min($this->tableInstance->getPageCount(), $this->tableInstance->getPage() + 3)
             ]
