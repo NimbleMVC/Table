@@ -60,24 +60,6 @@
                         }
                     }, 100);
                 });
-
-                $table.on('click', 'thead th[data-sortable="true"]', function (event) {
-                    const $sortIcon = $(this).find('.sort-icon'),
-                        actual = $sortIcon.attr('data-sort');
-
-                    if (actual === 'none') {
-                        $sortIcon.html('<i class="fas fa-sort-down mt-1" style="opacity: 0.4;"></i>');
-                        $sortIcon.attr('data-sort', 'ASC');
-                    } else if (actual === 'ASC') {
-                        $sortIcon.html('<i class="fas fa-sort-up mt-1" style="opacity: 0.4;"></i>');
-                        $sortIcon.attr('data-sort', 'DESC');
-                    } else if (actual === 'DESC') {
-                        $sortIcon.html('<i class="fas fa-sort mt-1" style="opacity: 0.4;"></i>');
-                        $sortIcon.attr('data-sort', 'none');
-                    }
-
-                    console.log($sortIcon.attr('data-sort'));
-                });
             });
         },
         reload: function (callback) {
