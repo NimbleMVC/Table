@@ -386,8 +386,6 @@ class Table implements TableInterface
             if ($isSaveAjaxMode) {
                 $this->saveAjaxConfig();
             }
-
-            $this->getAjaxConfig();
         }
 
         foreach ($this->filters as $filter) {
@@ -423,24 +421,20 @@ class Table implements TableInterface
             return;
         }
 
-        $page = $this->request->getPost('page');
+        $sortColumnData = [];
+        $filters = [];
 
-        if (empty($sortColumn) || is_null($sortColumn)) {
-            $this->setSortColumn([]);
-            $this->setOrderBy($this->baseOrderBy);
-        }
+        $page = $this->request->getPost('page');
+        $search = $this->request->getPost('search');
+        $sortColumn = $this->request->getPost('sort_column_key');
 
         if (!is_null($page)) {
             $this->setPage($page);
         }
 
-        $search = $this->request->getPost('search');
-
         if (!is_null($search)) {
             $this->setSearch($search);
         }
-
-        $search = $this->request->getPost('search');
 
         foreach ($this->request->getAllPost() as $key => $value) {
             if (str_starts_with($key, 'filter-')) {
@@ -450,28 +444,12 @@ class Table implements TableInterface
                     /** @var FilterInterface $filter */
                     $filter = $this->getFilters()[$explode[1]];
                     $filter->setValue($value);
+                    $filters[$explode[1]] = $filter->getValue();
                 }
             }
         }
 
-        $filters = [];
-
-        /**
-         * @var string $key
-         * @var FilterInterface $filter
-         */
-        foreach ($this->filters as $key => $filter) {
-            if (is_null($filter->getValue())) {
-                continue;
-            }
-
-            $filters[$key] = $filter->getValue();
-        }
-
-        $sortColumn = $this->request->getPost('sort_column_key');
-        $sortColumnData = [];
-
-        if (!empty($sortColumn)) {
+        if (!is_null($sortColumn)) {
             $sort = $this->request->getPost('sort_column_direction');
 
             if ($sort === 'none') {
@@ -485,6 +463,14 @@ class Table implements TableInterface
                     'direction' => 'desc'
                 ];
             }
+
+            $this->setSortColumn($sortColumnData);
+
+            if (empty($sortColumnData)) {
+                $this->setOrderBy($this->baseOrderBy);
+            } else {
+                $this->setOrderBy(htmlspecialchars($sortColumnData['key'] . ' ' . $sortColumnData['direction']));
+            }
         }
 
         $config = [
@@ -493,7 +479,7 @@ class Table implements TableInterface
             'orderBy' => $this->getOrderBy(),
             'limit' => $this->getLimit(),
             'filters' => $filters,
-            'sortColumn' => $sortColumnData
+            'sortColumn' => $sortColumnData ?: $this->getSortColumn()
         ];
 
         $find = $this->configTable->find(
@@ -548,10 +534,6 @@ class Table implements TableInterface
                 $this->setOrderBy($config['orderBy']);
             }
 
-            if (!empty($config['sort_column'])) {
-                $this->setSortColumn($config['sort_column']);
-            }
-
             $this->setLimit($config['limit']);
 
             foreach ($config['filters'] ?? [] as $filterKey => $value) {
@@ -564,8 +546,10 @@ class Table implements TableInterface
 
             if (!empty($config['sortColumn'])) {
                 $this->setSortColumn($config['sortColumn']);
-
                 $this->setOrderBy(htmlspecialchars($config['sortColumn']['key'] . ' ' . $config['sortColumn']['direction']));
+            } elseif (empty($config['sortColumn']) && !empty($this->baseOrderBy)) {
+                $this->setsortColumn([]);
+                $this->setOrderBy($this->baseOrderBy);
             }
         }
     }
