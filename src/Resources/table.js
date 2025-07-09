@@ -1,6 +1,6 @@
 (function ($) {
     const settings = {
-        debug: false
+        debug: true
     };
 
     const methods = {
@@ -60,6 +60,13 @@
                         }
                     }, 100);
                 });
+
+                $table.on('click', 'thead th[data-sortable="true"]', function (event) {
+                    const $sortIcon = $(this).find('.sort-icon'),
+                        actual = $sortIcon.attr('data-sort');
+
+                    methods._fetchAndUpdate($table.attr('id'), {'sort_column_key': $(this).attr('data-key'), 'sort_column_direction': actual})
+                });
             });
         },
         reload: function (callback) {
@@ -88,8 +95,17 @@
             });
         },
         _fetchAndUpdate: function (tableId, formData) {
+            if (methods.__isObject(formData)) {
+                formData = methods.__objectToFormData(formData);
+                formData.append('table_action_id', tableId);
+            }
+
             if (settings.debug) {
                 console.log('table reload', tableId, formData);
+
+                for (const [key, value] of formData.entries()) {
+                    console.log('Data:', key, value);
+                }
             }
 
             let url = window.location.href,
@@ -151,6 +167,28 @@
             formData.append('table_action_id', tableId);
 
             methods._fetchAndUpdate(tableId, formData);
+        },
+        __isObject: function(value) {
+            return value && typeof value === 'object' && !(value instanceof FormData) && !(value instanceof File);
+        },
+        __objectToFormData: function(obj, form, namespace) {
+            const formData = form || new FormData();
+
+            for (let property in obj) {
+                if (!obj.hasOwnProperty(property) || obj[property] === undefined || obj[property] === null) continue;
+
+                const formKey = namespace ? `${namespace}[${property}]` : property;
+
+                if (obj[property] instanceof Date) {
+                    formData.append(formKey, obj[property].toISOString());
+                } else if (typeof obj[property] === 'object' && !(obj[property] instanceof File)) {
+                    objectToFormData(obj[property], formData, formKey);
+                } else {
+                    formData.append(formKey, obj[property]);
+                }
+            }
+
+            return formData;
         }
     };
 

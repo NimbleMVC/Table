@@ -1,124 +1,149 @@
 <?php
-    use NimblePHP\Table\Column;
-    use NimblePHP\Table\Filter;
-    use NimblePHP\Table\Table;
+use NimblePHP\Table\Column;
+use NimblePHP\Table\Filter;
+use NimblePHP\Table\Table;
 
-    /** @var bool $isAjax */
-    /** @var array $actions */
-    /** @var array $columns */
-    /** @var array $filters */
-    /** @var array $data */
-    /** @var array $lang */
-    /** @var string $tableId */
-    /** @var string $currentUrl */
-    /** @var string $tableClasses */
-    /** @var string $searchValue */
-    /** @var int $pageCount */
-    /** @var int $page */
-    /** @var int $paginationStart */
-    /** @var int $paginationEnd */
-    /** @var Column $column */
-    /** @var Table $tableInstance */
-    /** @var Filter $filter */
+/** @var bool $isAjax */
+/** @var array $sortColumn */
+/** @var bool $isSortable */
+/** @var array $actions */
+/** @var array $columns */
+/** @var array $filters */
+/** @var array $data */
+/** @var array $lang */
+/** @var string $tableId */
+/** @var string $currentUrl */
+/** @var string $tableClasses */
+/** @var string $searchValue */
+/** @var int $pageCount */
+/** @var int $page */
+/** @var int $paginationStart */
+/** @var int $paginationEnd */
+/** @var Column $column */
+/** @var Table $tableInstance */
+/** @var Filter $filter */
 ?>
 
-<div id="<?= $tableId ?>" class="table-module m-2" data-url="<?= $currentUrl ?>">
-    <div class="table-header d-flex flex-wrap justify-content-between mb-2">
-        <?php if ($isAjax): ?>
-            <?php if (!empty($actions)): ?>
-                <div class="action-div pt-1 col-12 col-md-auto mb-2 mb-md-0">
-                    <?php foreach ($actions as $action): ?>
-                        <a href="<?= $action['url'] ?>" class="btn btn-sm btn-primary me-2<?= !empty($action['class']) ? ' ' . $action['class'] : '' ?>">
-                            <?= $action['name'] ?>
-                        </a>
-                    <?php endforeach ?>
-                </div>
-            <?php endif ?>
-
-            <div class="col-12 col-md-auto d-flex justify-content-end">
-                <input class="ajax-form form-control me-2 form-control-sm w-100"
-                       type="search" name="search" value="<?= $searchValue ?>"
-                       placeholder="<?= $lang['search'] ?>" aria-label="search"/>
-            </div>
-        <?php endif ?>
-    </div>
-    <div class="table-responsive-md overflow-auto">
-        <table class="table table-striped m-0<?= !empty($tableClasses) ? ' ' . $tableClasses : '' ?>">
-            <thead>
-                <tr>
-                    <?php foreach ($columns as $column): ?>
-                        <th scope="col" style="<?= trim($column->getStyleAsString()) ?>"><?= $column->getName() ?></th>
-                    <?php endforeach ?>
-                </tr>
-            </thead>
-            <tbody>
-            <?php if (empty($data)): ?>
-                <tr>
-                    <td colspan="<?= count($columns) ?>" class="text-center fst-italic text-muted py-5">
-                        <?= $lang['empty_data'] ?>
-                    </td>
-                </tr>
-            <?php else: ?>
-                <?php foreach ($data as $row): ?>
-                    <tr>
-                        <?php foreach ($columns as $column): ?>
-                            <td style="<?= $column->getStyleAsString() ?>">
-                                <?= $tableInstance->prepareColumnValue($column, $row) ?>
-                            </td>
+    <div id="<?= $tableId ?>" class="table-module m-2" data-url="<?= $currentUrl ?>">
+        <div class="table-header d-flex flex-wrap justify-content-between mb-2">
+            <?php if ($isAjax): ?>
+                <?php if (!empty($actions)): ?>
+                    <div class="action-div pt-1 col-12 col-md-auto mb-2 mb-md-0">
+                        <?php foreach ($actions as $action): ?>
+                            <a href="<?= $action['url'] ?>" class="btn btn-sm btn-primary me-2<?= !empty($action['class']) ? ' ' . $action['class'] : '' ?>">
+                                <?= $action['name'] ?>
+                            </a>
                         <?php endforeach ?>
-                    </tr>
-                <?php endforeach ?>
-            <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-    <div class="table-footer p-1 mt-2">
-        <div class="d-flex justify-content-between">
-            <div>
-                <?php if ($isAjax): ?>
-                    <?php foreach ($filters as $filter): ?>
-                        <?= $filter->render($tableInstance) ?>
-                    <?php endforeach ?>
-                <?php endif ?>
-            </div>
-            <div>
-                <?php if($isAjax && $pageCount > 1): ?>
-                    <div>
-                        <nav class="table-footer-pagination">
-                            <ul class="pagination justify-content-end m-0 pagination-sm">
-                                <?php if ($page > 1): ?>
-                                    <?php if ($page > 3): ?>
-                                        <li class="page-item">
-                                            <a href="?page=1" class="page-link ajax-link">&laquo;&laquo;</a>
-                                        </li>
-                                    <?php endif ?>
-                                    <li class="page-item">
-                                        <a href="?page=<?= $page - 1 ?>" class="page-link ajax-link">&laquo;</a>
-                                    </li>
-                                <?php endif ?>
-                                <?php for ($i = $paginationStart; $i <= $paginationEnd; $i++): ?>
-                                    <li class="page-item<?= $page == $i ? ' active' : '' ?>">
-                                        <a href="?page=<?= $i ?>" class="page-link ajax-link"><?= $i ?></a>
-                                    </li>
-                                <?php endfor ?>
-                                <?php if ($page < $pageCount): ?>
-                                    <li class="page-item">
-                                        <a href="?page=<?= $page + 1 ?>" class="page-link ajax-link">&raquo;</a>
-                                    </li>
-                                    <?php if ($page < $pageCount - 3): ?>
-                                        <li class="page-item">
-                                            <a href="?page=<?= $pageCount ?>" class="page-link ajax-link">&raquo;&raquo;</a>
-                                        </li>
-                                    <?php endif ?>
-                                <?php endif ?>
-                            </ul>
-                        </nav>
                     </div>
                 <?php endif ?>
+
+                <div class="col-12 col-md-auto d-flex justify-content-end">
+                    <input class="ajax-form form-control me-2 form-control-sm w-100"
+                           type="search" name="search" value="<?= $searchValue ?>"
+                           placeholder="<?= $lang['search'] ?>" aria-label="search"/>
+                </div>
+            <?php endif ?>
+        </div>
+        <div class="table-responsive-md overflow-auto">
+            <table class="table table-striped m-0<?= !empty($tableClasses) ? ' ' . $tableClasses : '' ?>">
+                <thead>
+                <tr>
+                    <?php foreach ($columns as $column): ?>
+                        <th scope="col" style="<?= trim($column->getStyleAsString()) ?> <?php if ($column->isSortable() && $isSortable): ?> cursor: pointer;<?php endif ?>" data-sortable="<?= $column->isSortable() ? 'true' : 'false' ?>" data-key="<?= $column->getKey() ?>" class="<?php if ($column->isSortable() && $isSortable): ?>user-select-none<?php endif ?>">
+                            <div class="d-flex justify-content-between align-self-center">
+                                <span>
+                                    <?= $column->getName() ?>
+                                </span>
+                                <?php if ($column->isSortable() && $isSortable): ?>
+                                    <?php if (!empty($sortColumn) && $sortColumn['key'] == $column->getKey()): ?>
+                                        <?php if ($sortColumn['direction'] === 'asc'): ?>
+                                            <span class="sort-icon" data-sort="asc">
+                                                <i class="fas fa-sort-down mt-1" style="opacity: 0.4;"></i>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="sort-icon" data-sort="desc">
+                                                <i class="fas fa-sort-up mt-1" style="opacity: 0.4;"></i>
+                                            </span>
+                                        <?php endif ?>
+                                    <?php else: ?>
+                                        <span class="sort-icon" data-sort="none">
+                                            <i class="fas fa-sort mt-1" style="opacity: 0.4;"></i>
+                                        </span>
+                                    <?php endif ?>
+                                <?php endif ?>
+                            </div>
+                        </th>
+                    <?php endforeach ?>
+                </tr>
+                </thead>
+                <tbody>
+                <?php if (empty($data)): ?>
+                    <tr>
+                        <td colspan="<?= count($columns) ?>" class="text-center fst-italic text-muted py-5">
+                            <?= $lang['empty_data'] ?>
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($data as $row): ?>
+                        <tr>
+                            <?php foreach ($columns as $column): ?>
+                                <td style="<?= $column->getStyleAsString() ?>">
+                                    <?= $tableInstance->prepareColumnValue($column, $row) ?>
+                                </td>
+                            <?php endforeach ?>
+                        </tr>
+                    <?php endforeach ?>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-footer p-1 mt-2">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <?php if ($isAjax): ?>
+                        <?php foreach ($filters as $filter): ?>
+                            <?= $filter->render($tableInstance) ?>
+                        <?php endforeach ?>
+                    <?php endif ?>
+                </div>
+                <div>
+                    <?php if($isAjax && $pageCount > 1): ?>
+                        <div>
+                            <nav class="table-footer-pagination">
+                                <ul class="pagination justify-content-end m-0 pagination-sm">
+                                    <?php if ($page > 1): ?>
+                                        <?php if ($page > 3): ?>
+                                            <li class="page-item">
+                                                <a href="?page=1" class="page-link ajax-link">&laquo;&laquo;</a>
+                                            </li>
+                                        <?php endif ?>
+                                        <li class="page-item">
+                                            <a href="?page=<?= $page - 1 ?>" class="page-link ajax-link">&laquo;</a>
+                                        </li>
+                                    <?php endif ?>
+                                    <?php for ($i = $paginationStart; $i <= $paginationEnd; $i++): ?>
+                                        <li class="page-item<?= $page == $i ? ' active' : '' ?>">
+                                            <a href="?page=<?= $i ?>" class="page-link ajax-link"><?= $i ?></a>
+                                        </li>
+                                    <?php endfor ?>
+                                    <?php if ($page < $pageCount): ?>
+                                        <li class="page-item">
+                                            <a href="?page=<?= $page + 1 ?>" class="page-link ajax-link">&raquo;</a>
+                                        </li>
+                                        <?php if ($page < $pageCount - 3): ?>
+                                            <li class="page-item">
+                                                <a href="?page=<?= $pageCount ?>" class="page-link ajax-link">&raquo;&raquo;</a>
+                                            </li>
+                                        <?php endif ?>
+                                    <?php endif ?>
+                                </ul>
+                            </nav>
+                        </div>
+                    <?php endif ?>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <?php if ($tableId): ?>
     <script>$("#<?= $tableId ?>").ajaxTable()</script>

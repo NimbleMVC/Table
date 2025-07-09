@@ -57,8 +57,29 @@
             <thead>
             <tr>
                 <?php foreach ($columns as $column): ?>
-                    <th scope="col" style="position: sticky; top: 0; z-index: 10; background-color: #ffffff; font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.7px; border-bottom: 2px solid #4299e1; padding: 16px 20px; color: #2d3748; <?= trim($column->getStyleAsString()) ?>">
-                        <?= $column->getName() ?>
+                    <th scope="col" style="position: sticky; top: 0; z-index: 10; background-color: #ffffff; font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.7px; border-bottom: 2px solid #4299e1; padding: 16px 20px; color: #2d3748; <?= trim($column->getStyleAsString()) ?>" data-sortable="<?= $column->isSortable() ? 'true' : 'false' ?>" data-key="<?= $column->getKey() ?>" class="<?php if ($column->isSortable() && $isSortable): ?>user-select-none<?php endif ?>">
+                        <div class="d-flex justify-content-between align-self-center">
+                            <span>
+                                <?= $column->getName() ?>
+                            </span>
+                            <?php if ($column->isSortable() && $isSortable): ?>
+                                <?php if (!empty($sortColumn) && $sortColumn['key'] == $column->getKey()): ?>
+                                    <?php if ($sortColumn['direction'] === 'asc'): ?>
+                                        <span class="sort-icon" data-sort="asc">
+                                            <i class="fas fa-sort-down mt-1" style="opacity: 0.4;"></i>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="sort-icon" data-sort="desc">
+                                            <i class="fas fa-sort-up mt-1" style="opacity: 0.4;"></i>
+                                        </span>
+                                    <?php endif ?>
+                                <?php else: ?>
+                                    <span class="sort-icon" data-sort="none">
+                                        <i class="fas fa-sort mt-1" style="opacity: 0.4;"></i>
+                                    </span>
+                                <?php endif ?>
+                            <?php endif ?>
+                        </div>
                     </th>
                 <?php endforeach ?>
             </tr>
