@@ -449,6 +449,18 @@ class Table implements TableInterface
             }
         }
 
+        /**
+         * @var string $key
+         * @var FilterInterface $filter
+         */
+        foreach ($this->filters as $key => $filter) {
+            if (is_null($filter->getValue())) {
+                continue;
+            }
+
+            $filters[$key] = $filter->getValue();
+        }
+
         if (!is_null($sortColumn)) {
             $sort = $this->request->getPost('sort_column_direction');
 
