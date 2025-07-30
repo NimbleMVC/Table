@@ -78,6 +78,34 @@ $table->setData([
 echo $table->render();
 ```
 
+### Weryfikacja z modelem
+
+Jeśli chcesz przetestować z modelem:
+
+```php
+<?php
+
+use NimblePHP\Table\Table;
+use NimblePHP\Table\Column;
+
+// W kontrolerze
+$table = new Table('test-model-table');
+
+// Załaduj model
+$userModel = $this->loadModel('User');
+$table->setModel($userModel);
+
+$table->addColumn(
+    Column::create('users.id', 'ID')
+);
+
+$table->addColumn(
+    Column::create('users.name', 'Nazwa')
+);
+
+echo $table->render();
+```
+
 Jeśli tabela wyświetla się poprawnie, instalacja przebiegła pomyślnie.
 
 ## Rozwiązywanie problemów

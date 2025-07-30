@@ -48,12 +48,12 @@ Jeśli używasz modeli NimblePHP, możesz bezpośrednio połączyć tabelę z mo
 
 use NimblePHP\Table\Table;
 use NimblePHP\Table\Column;
-use App\Models\User; // Twój model
 
 $table = new Table('users-table');
 
-// Ustaw model - dane będą pobierane automatycznie
-$table->setModel(new User());
+// Załaduj i ustaw model - dane będą pobierane automatycznie
+$userModel = $this->loadModel('User');
+$table->setModel($userModel);
 
 // Dodaj kolumny
 $table->addColumn(
@@ -209,7 +209,10 @@ $table->addFilter($dateFilter);
 
 ```php
 $table = new Table('users-table');
-$table->setModel(new User());
+
+// Załaduj model
+$userModel = $this->loadModel('User');
+$table->setModel($userModel);
 $table->setAjax(true); // Włącz tryb AJAX
 
 // Ustaw klucz AJAX (dla rozróżnienia użytkowników)
@@ -227,14 +230,16 @@ echo $table->render();
 use NimblePHP\Table\Table;
 use NimblePHP\Table\Column;
 use NimblePHP\Table\Filter;
-use App\Models\User;
 
 // Ustaw język
 Table::changeLanguage('pl');
 
 // Utwórz tabelę
 $table = new Table('advanced-users-table');
-$table->setModel(new User());
+
+// Załaduj i ustaw model
+$userModel = $this->loadModel('User');
+$table->setModel($userModel);
 $table->setAjax(true);
 $table->setLimit(15);
 $table->setLayout('modern');
