@@ -217,6 +217,12 @@ class Table implements TableInterface
     protected ?string $baseOrderBy = null;
 
     /**
+     * Columns to read
+     * @var array|null
+     */
+    protected ?array $readColumns = null;
+
+    /**
      * Initialize
      */
     public function __construct(?string $id = null)
@@ -349,7 +355,7 @@ class Table implements TableInterface
         if ($this->data === null && isset($this->model) && $this->model instanceof ModelInterface) {
             $this->data = $this->model->readAll(
                 $this->getConditions(),
-                null,
+                $this->getReadColumns(),
                 $this->getOrderBy(),
                 (($this->getPage() - 1) * $this->getLimit()) . ',' . $this->getLimit(),
                 $this->getGroupBy()
@@ -357,6 +363,62 @@ class Table implements TableInterface
         }
 
         return $this->data ?? [];
+    }
+
+    /**
+     * Get read columns
+     * @return array|null
+     */
+    public function getReadColumns(): ?array
+    {
+        if ($this->readColumns === null) {
+            return $this->readColumns;
+        }
+
+        return array_unique($this->readColumns);
+    }
+
+    /**
+     * @param array|null $readColumns
+     * @return void
+     */
+    public function setReadColumns(?array $readColumns): void
+    {
+        $this->readColumns = $readColumns;
+    }
+
+    /**
+     * @param string|null ...$columName
+     * @return void
+     */
+    public function addReadColumn(?string ...$columName): void
+    {
+        if ($this->readColumns === null) {
+            $this->readColumns = [];
+        }
+
+        foreach ($columName as $column) {
+            $this->readColumns[] = $column;
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function autoReadColumns(): void
+    {
+        $this->readColumns = [
+            $this->model->getTableInstance()->getName() . '.id'
+        ];
+
+        /** @var ColumnInterface $column */
+        foreach ($this->columns as $column) {
+            if (!$column->getSearch()) {
+                continue;
+            }
+
+            $this->readColumns[] = $column->getKey();
+        }
     }
 
     /**
