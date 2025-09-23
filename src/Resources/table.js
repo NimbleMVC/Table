@@ -61,11 +61,32 @@
                     }, 100);
                 });
 
-                $table.on('click', 'thead th[data-sortable="true"]', function (event) {
+                $table.on('click', 'thead th[data-sortable="true"]', function () {
                     const $sortIcon = $(this).find('.sort-icon'),
                         actual = $sortIcon.attr('data-sort');
 
                     methods._fetchAndUpdate($table.attr('id'), {'sort_column_key': $(this).attr('data-key'), 'sort_column_direction': actual})
+                });
+
+                $table.on('click', '.action-checkbox-select-all', function () {
+                    $(this).closest('table').find('.ajax-action-checkbox').prop('checked', $(this).prop('checked'));
+                });
+
+                $table.on('click, change', '.ajax-action-checkbox', function () {
+                    const $selectAll = $(this).closest('table').find('.action-checkbox-select-all'),
+                        $boxes = $(this).closest('table').find('.ajax-action-checkbox');
+
+                    if ($boxes.filter(':checked').length === 0) {
+                        $selectAll.prop("checked", false).prop("indeterminate", false);
+                        $selectAll.prop("checked", false).prop("checked", false);
+                    } else if ($boxes.filter(':checked').length === $boxes.length) {
+                        $selectAll.prop("checked", false).prop("indeterminate", false);
+                        $selectAll.prop("checked", false).prop("checked", true);
+                        console.log("Wszystkie są zaznaczone");
+                    } else {
+                        $selectAll.prop("checked", false).prop("indeterminate", true);
+                        console.log("Część jest zaznaczona");
+                    }
                 });
             });
         },
