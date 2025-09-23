@@ -1088,7 +1088,7 @@ class Table implements TableInterface
     private function generateAjaxAction(): void
     {
         $width = '30px';
-        $actionColumn = Column::create(':action_checkbox_ajax:', '')
+        $actionColumn = Column::create(':action_checkbox_select_all:', '<input type="checkbox" style="position: absolute; top: 12px;" class="action-checkbox-select-all" />')
             ->setStyle(['width' => $width, 'min-width' => $width, 'padding-right' => '10px', 'padding-top' => '10px', 'position' => 'relative'])
             ->setSearch(false)
             ->setSortable(false)
