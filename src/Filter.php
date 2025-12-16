@@ -252,7 +252,7 @@ class Filter implements FilterInterface
 
     /**
      * Set value
-     * @param string $value
+     * @param mixed $value
      * @return $this
      */
     public function setValue(mixed $value): self
