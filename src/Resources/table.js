@@ -82,10 +82,8 @@
                     } else if ($boxes.filter(':checked').length === $boxes.length) {
                         $selectAll.prop("checked", false).prop("indeterminate", false);
                         $selectAll.prop("checked", false).prop("checked", true);
-                        console.log("Wszystkie są zaznaczone");
                     } else {
                         $selectAll.prop("checked", false).prop("indeterminate", true);
-                        console.log("Część jest zaznaczona");
                     }
                 });
             });
