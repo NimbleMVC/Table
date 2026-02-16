@@ -8,7 +8,7 @@ use NimblePHP\Framework\Cookie;
 use NimblePHP\Framework\Exception\DatabaseException;
 use NimblePHP\Framework\Exception\NimbleException;
 use NimblePHP\Framework\Interfaces\ModelInterface;
-use NimblePHP\Framework\ModuleRegister;
+use NimblePHP\Framework\Module\ModuleRegister;
 use NimblePHP\Framework\Request;
 use NimblePHP\Table\Interfaces\ColumnInterface;
 use NimblePHP\Table\Interfaces\FilterInterface;

@@ -3,10 +3,13 @@
 namespace NimblePHP\Table;
 
 use Krzysztofzylka\File\File;
+use NimblePHP\Framework\Config;
 use NimblePHP\Framework\Interfaces\ServiceProviderInterface;
 use NimblePHP\Framework\Interfaces\ServiceProviderUpdateInterface;
 use NimblePHP\Framework\Kernel;
-use NimblePHP\Framework\ModuleRegister;
+use NimblePHP\Framework\Module\Interfaces\ModuleInterface;
+use NimblePHP\Framework\Module\Interfaces\ModuleUpdateInterface;
+use NimblePHP\Framework\Module\ModuleRegister;
 use krzysztofzylka\DatabaseManager\Exception\ConnectException;
 use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
 use NimblePHP\Framework\Exception\DatabaseException;
@@ -16,17 +19,24 @@ use NimblePHP\Migrations\Migrations;
 use NimblePHP\Twig\Twig;
 use Throwable;
 
-class ServiceProvider implements ServiceProviderInterface, ServiceProviderUpdateInterface
+class Module implements ModuleInterface, ModuleUpdateInterface
 {
+
+    public function getName(): string
+    {
+        return 'NimblePHP Table';
+    }
 
     public function register(): void
     {
-        File::copy(__DIR__ . '/Resources/table.js', Kernel::$projectPath . '/public/assets/table.js');
+        if (Config::get('TABLE_COPY_ASSET', true)) {
+            File::copy(__DIR__ . '/Resources/table.js', Kernel::$projectPath . '/public/assets/table.js');
 
-        if (ModuleRegister::moduleExistsInVendor('nimblephp/twig')) {
-            try {
-                Twig::addJsHeader('/assets/table.js');
-            } catch (Throwable) {
+            if (ModuleRegister::moduleExistsInVendor('nimblephp/twig')) {
+                try {
+                    Twig::addJsHeader('/assets/table.js');
+                } catch (Throwable) {
+                }
             }
         }
     }
