@@ -1,4 +1,6 @@
 <?php
+
+use NimblePHP\Framework\Translation\Translation;
 use NimblePHP\Table\Column;
 use NimblePHP\Table\Filter;
 use NimblePHP\Table\Table;
@@ -10,7 +12,6 @@ use NimblePHP\Table\Table;
 /** @var array $columns */
 /** @var array $filters */
 /** @var array $data */
-/** @var array $lang */
 /** @var string $tableId */
 /** @var string $currentUrl */
 /** @var string $tableClasses */
@@ -40,7 +41,7 @@ use NimblePHP\Table\Table;
                 <div class="col-12 col-md-auto d-flex justify-content-end">
                     <input class="ajax-form form-control me-2 form-control-sm w-100"
                            type="search" name="search" value="<?= $searchValue ?>"
-                           placeholder="<?= $lang['search'] ?>" aria-label="search"/>
+                           placeholder="<?= Translation::getInstance()->translate('module.table.search') ?>" aria-label="search"/>
                 </div>
             <?php endif ?>
         </div>
@@ -80,7 +81,7 @@ use NimblePHP\Table\Table;
                 <?php if (empty($data)): ?>
                     <tr>
                         <td colspan="<?= count($columns) ?>" class="text-center fst-italic text-muted py-5">
-                            <?= $lang['empty_data'] ?>
+                            <?= Translation::getInstance()->translate('module.table.empty_data') ?>
                         </td>
                     </tr>
                 <?php else: ?>

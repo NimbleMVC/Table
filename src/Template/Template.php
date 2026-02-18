@@ -62,7 +62,6 @@ class Template
                 'columns' => $this->tableInstance->getColumns(),
                 'filters' => $this->tableInstance->getFilters(),
                 'data' => $this->tableInstance->getData(),
-                'lang' => Table::$LANGUAGE,
                 'tableInstance' => $this->tableInstance,
                 'pageCount' => $this->tableInstance->getPageCount(),
                 'page' => $this->tableInstance->getPage(),
