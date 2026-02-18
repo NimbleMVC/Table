@@ -1,0 +1,12 @@
+{
+  "module": {
+    "table": {
+      "search": "Search...",
+      "show": "Show",
+      "records": "records",
+      "page": "Page",
+      "of": "of",
+      "empty_data": "No data to display"
+    }
+  }
+}

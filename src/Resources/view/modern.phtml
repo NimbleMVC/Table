@@ -1,4 +1,6 @@
 <?php
+
+use NimblePHP\Framework\Translation\Translation;
 use NimblePHP\Table\Column;
 use NimblePHP\Table\Filter;
 use NimblePHP\Table\Table;
@@ -8,7 +10,6 @@ use NimblePHP\Table\Table;
 /** @var array $columns */
 /** @var array $filters */
 /** @var array $data */
-/** @var array $lang */
 /** @var string $tableId */
 /** @var string $currentUrl */
 /** @var string $tableClasses */
@@ -40,7 +41,7 @@ use NimblePHP\Table\Table;
                     <div class="input-group">
                         <input class="ajax-form form-control"
                                type="search" name="search" value="<?= $searchValue ?>"
-                               placeholder="<?= $lang['search'] ?>" aria-label="search"
+                               placeholder="<?= Translation::getInstance()->translate('module.table.search') ?>" aria-label="search"
                                style="border-radius: 6px; border: 1px solid #e2e8f0; padding: 10px 16px; font-size: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05) inset;"/>
                         <button class="btn btn-outline-secondary" type="button" style="border-radius: 0 6px 6px 0; border: 1px solid #e2e8f0; border-left: none;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -153,7 +154,8 @@ use NimblePHP\Table\Table;
 
                     <?php if (!empty($data)): ?>
                         <div class="text-muted fs-sm mt-2" style="font-size: 13px; color: #718096;">
-                            <?= $lang['show'] ?> <?= count($data) ?> <?= $lang['records'] ?> <?= $pageCount > 1 ? '(' . $lang['page'] . ' ' . $page . ' ' . $lang['of'] . ' ' . $pageCount . ')' : '' ?>
+                            <?= Translation::getInstance()->translate('module.table.show') ?> <?= count($data) ?>
+                            <?= Translation::getInstance()->translate('module.table.records') ?> <?= $pageCount > 1 ? '(' . Translation::getInstance()->translate('module.table.page') . ' ' . $page . ' ' . Translation::getInstance()->translate('module.table.of') . ' ' . $pageCount . ')' : '' ?>
                         </div>
                     <?php endif; ?>
                 </div>

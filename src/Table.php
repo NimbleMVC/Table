@@ -22,19 +22,6 @@ class Table implements TableInterface
 {
 
     /**
-     * Language
-     * @var array|string[]
-     */
-    public static array $LANGUAGE = [
-        'search' => 'Search...',
-        'show' => 'Show',
-        'records' => 'records',
-        'page' => 'Page',
-        'of' => 'of',
-        'empty_data' => 'No data to display'
-    ];
-
-    /**
      * Layout
      * empty (normal, professional, modern)
      * @var string
@@ -236,25 +223,6 @@ class Table implements TableInterface
 
         if (!is_null($id)) {
             $this->setId($id, false);
-        }
-    }
-
-    /**
-     * Change language
-     * @param string $lang
-     * @return void
-     */
-    public static function changeLanguage(string $lang): void
-    {
-        if ($lang === 'pl') {
-            self::$LANGUAGE = [
-                'search' => 'Wyszukaj...',
-                'show' => 'Pokaż',
-                'records' => 'rekordów',
-                'page' => 'Strona',
-                'of' => 'z',
-                'empty_data' => 'Brak danych do wyświetlenia'
-            ];
         }
     }
 
