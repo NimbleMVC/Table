@@ -85,5 +85,70 @@ interface ColumnInterface
      */
     public function getStyleAsString(): string;
 
+    /**
+     * Set sortable
+     * @param bool $sortable
+     * @return ColumnInterface
+     */
+    public function setSortable(bool $sortable): ColumnInterface;
+
+    /**
+     * Is sortable
+     * @return bool
+     */
+    public function isSortable(): bool;
+
+    /**
+     * Set edit callback
+     * @param callable|null $edit
+     * @return ColumnInterface
+     */
+    public function setEdit(?callable $edit): ColumnInterface;
+
+    /**
+     * Edit callback alias
+     * @param callable|null $edit
+     * @return ColumnInterface
+     */
+    public function edit(?callable $edit): ColumnInterface;
+
+    /**
+     * Get edit callback
+     * @return mixed
+     */
+    public function getEdit(): mixed;
+
+    /**
+     * Is editable
+     * @return bool
+     */
+    public function isEditable(): bool;
+
+    /**
+     * Set update callback
+     * @param callable|null $onUpdate
+     * @return ColumnInterface
+     */
+    public function setOnUpdate(?callable $onUpdate): ColumnInterface;
+
+    /**
+     * Update callback alias
+     * @param callable|null $onUpdate
+     * @return ColumnInterface
+     */
+    public function onUpdate(?callable $onUpdate): ColumnInterface;
+
+    /**
+     * Get update callback
+     * @return mixed
+     */
+    public function getOnUpdate(): mixed;
+
+    /**
+     * Has update callback
+     * @return bool
+     */
+    public function hasOnUpdate(): bool;
+
 
 }

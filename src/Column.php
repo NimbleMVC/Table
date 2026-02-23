@@ -45,6 +45,18 @@ class Column implements ColumnInterface
     protected bool $sortable = true;
 
     /**
+     * Edit callback
+     * @var mixed
+     */
+    protected mixed $edit = null;
+
+    /**
+     * Update callback
+     * @var mixed
+     */
+    protected mixed $onUpdate = null;
+
+    /**
      * Create column
      * @param string $key
      * @param string|null $name
@@ -186,6 +198,86 @@ class Column implements ColumnInterface
     public function isSortable(): bool
     {
         return $this->sortable;
+    }
+
+    /**
+     * Set edit callback
+     * @param callable|null $edit
+     * @return ColumnInterface
+     */
+    public function setEdit(?callable $edit): ColumnInterface
+    {
+        $this->edit = $edit;
+
+        return $this;
+    }
+
+    /**
+     * Edit callback alias
+     * @param callable|null $edit
+     * @return ColumnInterface
+     */
+    public function edit(?callable $edit): ColumnInterface
+    {
+        return $this->setEdit($edit);
+    }
+
+    /**
+     * Get edit callback
+     * @return mixed
+     */
+    public function getEdit(): mixed
+    {
+        return $this->edit;
+    }
+
+    /**
+     * Is editable
+     * @return bool
+     */
+    public function isEditable(): bool
+    {
+        return is_callable($this->edit);
+    }
+
+    /**
+     * Set update callback
+     * @param callable|null $onUpdate
+     * @return ColumnInterface
+     */
+    public function setOnUpdate(?callable $onUpdate): ColumnInterface
+    {
+        $this->onUpdate = $onUpdate;
+
+        return $this;
+    }
+
+    /**
+     * Update callback alias
+     * @param callable|null $onUpdate
+     * @return ColumnInterface
+     */
+    public function onUpdate(?callable $onUpdate): ColumnInterface
+    {
+        return $this->setOnUpdate($onUpdate);
+    }
+
+    /**
+     * Get update callback
+     * @return mixed
+     */
+    public function getOnUpdate(): mixed
+    {
+        return $this->onUpdate;
+    }
+
+    /**
+     * Has update callback
+     * @return bool
+     */
+    public function hasOnUpdate(): bool
+    {
+        return is_callable($this->onUpdate);
     }
 
     /**

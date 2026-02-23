@@ -7,6 +7,7 @@ use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
 use NimblePHP\Framework\Cookie;
 use NimblePHP\Framework\Exception\DatabaseException;
 use NimblePHP\Framework\Exception\NimbleException;
+use NimblePHP\Framework\Exception\ValidationException;
 use NimblePHP\Framework\Interfaces\ModelInterface;
 use NimblePHP\Framework\Module\ModuleRegister;
 use NimblePHP\Framework\Request;
@@ -210,6 +211,18 @@ class Table implements TableInterface
     protected ?array $readColumns = null;
 
     /**
+     * Inline edit errors
+     * @var array
+     */
+    protected array $inlineEditErrors = [];
+
+    /**
+     * Inline edit values
+     * @var array
+     */
+    protected array $inlineEditValues = [];
+
+    /**
      * Initialize
      */
     public function __construct(?string $id = null)
@@ -402,6 +415,11 @@ class Table implements TableInterface
             && $this->request->getPost('table_action_id', false) === $this->getId();
         $this->baseOrderBy = $this->getOrderBy();
 
+        /**
+         * Dynamiczny wybór źródła konfiguracji:
+         * - AJAX => DB
+         * - non-AJAX => cookies
+         */
         if ($this->isAjax()) {
             if (!$_ENV['DATABASE']) {
                 throw new NimbleException('The database must be enabled', 500);
@@ -416,6 +434,12 @@ class Table implements TableInterface
             if ($isSaveAjaxMode) {
                 $this->saveAjaxConfig();
             }
+        } else {
+            // Fallback do cookies tylko wtedy, gdy nie używamy DB-config
+            $this->readConfig();
+            $this->queryConfig();
+            $this->readConfig();
+            $this->saveConfig();
         }
 
         foreach ($this->filters as $filter) {
@@ -425,6 +449,8 @@ class Table implements TableInterface
         if ($this->hasAjaxAction()) {
             $this->generateAjaxAction();
         }
+
+        $this->processInlineEditUpdate($isSaveAjaxMode);
 
         ob_start();
 
@@ -605,16 +631,89 @@ class Table implements TableInterface
     public function prepareColumnValue(ColumnInterface $column, array $data): string
     {
         if (is_callable($column->getValue())) {
-            $cell = new Cell();
-            $cell->value = $this->getDataFromArray($data, $column->getKey()) ?? '';
-            $cell->data = $data;
-
-            return $column->getValue()($cell);
+            return $column->getValue()($this->createCell($column, $data));
         } elseif (!is_null($column->getValue())) {
             return $column->getValue();
         }
 
         return $this->getDataFromArray($data, $column->getKey()) ?? '';
+    }
+
+    /**
+     * Prepare column edit value
+     * @param ColumnInterface $column
+     * @param array $data
+     * @return string
+     */
+    public function prepareColumnEditValue(ColumnInterface $column, array $data): string
+    {
+        if (!is_callable($column->getEdit())) {
+            return '';
+        }
+
+        $cell = $this->createCell($column, $data);
+        $submittedValue = $this->getInlineEditValueByRow($column, $data);
+
+        if (!is_null($submittedValue)) {
+            $cell->value = $submittedValue;
+        }
+
+        return $column->getEdit()($cell);
+    }
+
+    /**
+     * Is column editable
+     * @param ColumnInterface $column
+     * @return bool
+     */
+    public function isColumnEditable(ColumnInterface $column): bool
+    {
+        return $column->isEditable();
+    }
+
+    /**
+     * Get inline edit error by row
+     * @param ColumnInterface $column
+     * @param array $data
+     * @return string|null
+     */
+    public function getInlineEditErrorByRow(ColumnInterface $column, array $data): ?string
+    {
+        $rowId = $this->getRowIdentifier($data);
+
+        if (is_null($rowId)) {
+            return null;
+        }
+
+        return $this->getInlineEditError($column->getKey(), $rowId);
+    }
+
+    /**
+     * Has inline edit error by row
+     * @param ColumnInterface $column
+     * @param array $data
+     * @return bool
+     */
+    public function hasInlineEditErrorByRow(ColumnInterface $column, array $data): bool
+    {
+        return !is_null($this->getInlineEditErrorByRow($column, $data));
+    }
+
+    /**
+     * Get inline edit value by row
+     * @param ColumnInterface $column
+     * @param array $data
+     * @return mixed
+     */
+    public function getInlineEditValueByRow(ColumnInterface $column, array $data): mixed
+    {
+        $rowId = $this->getRowIdentifier($data);
+
+        if (is_null($rowId)) {
+            return null;
+        }
+
+        return $this->getInlineEditValue($column->getKey(), $rowId);
     }
 
     /**
@@ -857,6 +956,29 @@ class Table implements TableInterface
     }
 
     /**
+     * Get row identifier
+     * @param array $data
+     * @return null|int|string
+     */
+    public function getRowIdentifier(array $data): null|int|string
+    {
+        if (!isset($this->model) || is_null($this->model)) {
+            return null;
+        }
+
+        $key = implode('.', $this->getAjaxActionKey());
+        $id = $this->getDataFromArray($data, $key);
+
+        if (is_null($id) || $id === '') {
+            return null;
+        }
+
+        return ctype_digit((string)$id)
+            ? (int)$id
+            : $id;
+    }
+
+    /**
      * Set additional table class
      * @param string $class
      * @return void
@@ -912,6 +1034,141 @@ class Table implements TableInterface
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    /**
+     * Process inline edit update
+     * @param bool $isSaveAjaxMode
+     * @return void
+     */
+    protected function processInlineEditUpdate(bool $isSaveAjaxMode): void
+    {
+        if (!$isSaveAjaxMode) {
+            return;
+        }
+
+        $columnKey = (string)$this->request->getPost('table_edit_column', '', false);
+        $rowId = $this->request->getPost('table_edit_id', null, false);
+
+        if ($columnKey === '' || is_null($rowId) || $rowId === '') {
+            return;
+        }
+
+        $column = $this->columns[$columnKey] ?? null;
+
+        if (!$column instanceof ColumnInterface || !$column->hasOnUpdate()) {
+            return;
+        }
+
+        $value = $this->request->getPost('table_edit_value', null, false);
+
+        if (is_null($value)) {
+            foreach ($this->request->getAllPost(false) as $postKey => $postValue) {
+                if (in_array($postKey, ['table_action_id', 'table_edit_column', 'table_edit_id', 'table_edit_value'], true)) {
+                    continue;
+                }
+
+                $value = $postValue;
+                break;
+            }
+        }
+
+        $preparedRowId = ctype_digit((string)$rowId)
+            ? (int)$rowId
+            : $rowId;
+
+        try {
+            $column->getOnUpdate()($preparedRowId, $value);
+            $this->clearInlineEditState($columnKey, $preparedRowId);
+        } catch (ValidationException $exception) {
+            $this->setInlineEditValue($columnKey, $preparedRowId, $value);
+            $this->setInlineEditError($columnKey, $preparedRowId, $exception->getMessage());
+        }
+    }
+
+    /**
+     * Set inline edit error
+     * @param string $columnKey
+     * @param int|string $rowId
+     * @param string $message
+     * @return void
+     */
+    protected function setInlineEditError(string $columnKey, int|string $rowId, string $message): void
+    {
+        $this->inlineEditErrors[$this->buildInlineEditMapKey($columnKey, $rowId)] = $message;
+    }
+
+    /**
+     * Get inline edit error
+     * @param string $columnKey
+     * @param int|string $rowId
+     * @return string|null
+     */
+    protected function getInlineEditError(string $columnKey, int|string $rowId): ?string
+    {
+        return $this->inlineEditErrors[$this->buildInlineEditMapKey($columnKey, $rowId)] ?? null;
+    }
+
+    /**
+     * Set inline edit value
+     * @param string $columnKey
+     * @param int|string $rowId
+     * @param mixed $value
+     * @return void
+     */
+    protected function setInlineEditValue(string $columnKey, int|string $rowId, mixed $value): void
+    {
+        $this->inlineEditValues[$this->buildInlineEditMapKey($columnKey, $rowId)] = $value;
+    }
+
+    /**
+     * Get inline edit value
+     * @param string $columnKey
+     * @param int|string $rowId
+     * @return mixed
+     */
+    protected function getInlineEditValue(string $columnKey, int|string $rowId): mixed
+    {
+        return $this->inlineEditValues[$this->buildInlineEditMapKey($columnKey, $rowId)] ?? null;
+    }
+
+    /**
+     * Clear inline edit state
+     * @param string $columnKey
+     * @param int|string $rowId
+     * @return void
+     */
+    protected function clearInlineEditState(string $columnKey, int|string $rowId): void
+    {
+        $mapKey = $this->buildInlineEditMapKey($columnKey, $rowId);
+
+        unset($this->inlineEditErrors[$mapKey], $this->inlineEditValues[$mapKey]);
+    }
+
+    /**
+     * Build inline edit map key
+     * @param string $columnKey
+     * @param int|string $rowId
+     * @return string
+     */
+    protected function buildInlineEditMapKey(string $columnKey, int|string $rowId): string
+    {
+        return $columnKey . '::' . (string)$rowId;
+    }
+
+    /**
+     * Create cell object for callback
+     * @param ColumnInterface $column
+     * @param array $data
+     * @return Cell
+     */
+    protected function createCell(ColumnInterface $column, array $data): Cell
+    {
+        $cell = new Cell();
+        $cell->value = $this->getDataFromArray($data, $column->getKey()) ?? '';
+        $cell->data = $data;
+
+        return $cell;
     }
 
     /**

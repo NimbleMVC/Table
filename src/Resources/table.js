@@ -72,6 +72,33 @@
                     $(this).closest('table').find('.ajax-action-checkbox').prop('checked', $(this).prop('checked'));
                 });
 
+                $table.on('dblclick', '.table-cell-editable', function (event) {
+                    if ($(event.target).closest('.table-cell-editor').length) {
+                        return;
+                    }
+
+                    methods._enableCellEdit($(this));
+                });
+
+                $table.on('click', '.table-cell-edit-trigger', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    methods._enableCellEdit($(this).closest('.table-cell-editable'));
+                });
+
+                $table.on('keydown', '.table-cell-editor :input', function (event) {
+                    if (event.key === 'Escape') {
+                        methods._disableCellEdit($(this).closest('.table-cell-editable'));
+                    }
+                });
+
+                $table.on('click', function (event) {
+                    if ($(event.target).closest('.table-cell-editable').length === 0) {
+                        methods._disableAllCellEdit($table);
+                    }
+                });
+
                 $table.on('click, change', '.ajax-action-checkbox', function () {
                     const $selectAll = $(this).closest('table').find('.action-checkbox-select-all'),
                         $boxes = $(this).closest('table').find('.ajax-action-checkbox');
@@ -86,6 +113,8 @@
                         $selectAll.prop("checked", false).prop("indeterminate", true);
                     }
                 });
+
+                methods._restoreEditableState($table);
             });
         },
         reload: function (callback) {
@@ -159,6 +188,7 @@
 
                         if (currentElement) {
                             currentElement.innerHTML = newElement.innerHTML;
+                            methods._restoreEditableState($(currentElement));
                         }
                     } else {
                         if (settings.debug) {
@@ -172,7 +202,8 @@
         },
         _submitFormData: function (input) {
             const formData = new FormData(),
-                tableId = $(input).closest('.table-module').attr('id');
+                tableId = $(input).closest('.table-module').attr('id'),
+                $editableCell = $(input).closest('.table-cell-editable');
 
             let value;
 
@@ -183,9 +214,70 @@
             }
 
             formData.append($(input).attr('name'), value);
+
+            if ($editableCell.length) {
+                formData.append('table_edit_column', $editableCell.attr('data-edit-column') || '');
+                formData.append('table_edit_id', $editableCell.attr('data-edit-id') || '');
+                formData.append('table_edit_value', value);
+            }
+
             formData.append('table_action_id', tableId);
 
             methods._fetchAndUpdate(tableId, formData);
+        },
+        _enableCellEdit: function ($editableCell) {
+            if (!$editableCell || !$editableCell.length || $editableCell.hasClass('is-editing')) {
+                return;
+            }
+
+            const $table = $editableCell.closest('.table-module');
+
+            methods._disableAllCellEdit($table, $editableCell);
+
+            $editableCell.addClass('is-editing');
+            $editableCell.find('.table-cell-value').addClass('d-none');
+            $editableCell.find('.table-cell-editor').removeClass('d-none');
+            $editableCell.find('.table-cell-edit-trigger').addClass('d-none');
+
+            const $input = $editableCell.find('.table-cell-editor :input:visible').first();
+
+            if ($input.length) {
+                $input.trigger('focus');
+            }
+        },
+        _disableCellEdit: function ($editableCell) {
+            if (!$editableCell || !$editableCell.length) {
+                return;
+            }
+
+            $editableCell.removeClass('is-editing');
+            $editableCell.find('.table-cell-value').removeClass('d-none');
+            $editableCell.find('.table-cell-editor').addClass('d-none');
+            $editableCell.find('.table-cell-edit-trigger').removeClass('d-none');
+        },
+        _disableAllCellEdit: function ($table, $except) {
+            if (!$table || !$table.length) {
+                return;
+            }
+
+            $table.find('.table-cell-editable.is-editing').each(function () {
+                if ($except && $except.length && this === $except.get(0)) {
+                    return;
+                }
+
+                methods._disableCellEdit($(this));
+            });
+        },
+        _restoreEditableState: function ($table) {
+            if (!$table || !$table.length) {
+                return;
+            }
+
+            const $editableCell = $table.find('.table-cell-editable.table-cell-editable-open').first();
+
+            if ($editableCell.length) {
+                methods._enableCellEdit($editableCell);
+            }
         },
         __isObject: function(value) {
             return value && typeof value === 'object' && !(value instanceof FormData) && !(value instanceof File);
