@@ -88,8 +88,32 @@ use NimblePHP\Table\Table;
                 <?php foreach ($data as $row): ?>
                     <tr style="transition: background-color 0.15s ease-in-out; hover:background-color: #f1f5f9;">
                         <?php foreach ($columns as $column): ?>
+                            <?php
+                                $columnValue = $tableInstance->prepareColumnValue($column, $row);
+                                $isEditableColumn = $tableInstance->isColumnEditable($column);
+                                $editError = $tableInstance->getInlineEditErrorByRow($column, $row);
+                            ?>
                             <td style="padding: 12px 15px; border-bottom: 1px solid #e9ecef; font-size: 14px; vertical-align: middle; <?= $column->getStyleAsString() ?>">
-                                <?= $tableInstance->prepareColumnValue($column, $row) ?>
+                                <?php if ($isEditableColumn): ?>
+                                    <div class="table-cell-editable d-flex align-items-start justify-content-between gap-2<?= !empty($editError) ? ' table-cell-editable-open' : '' ?>" data-edit-column="<?= htmlspecialchars($column->getKey(), ENT_QUOTES) ?>" data-edit-id="<?= htmlspecialchars((string)($tableInstance->getRowIdentifier($row) ?? ''), ENT_QUOTES) ?>">
+                                        <div class="table-cell-value flex-grow-1">
+                                            <?= $columnValue ?>
+                                        </div>
+                                        <div class="table-cell-editor d-none flex-grow-1">
+                                            <?= $tableInstance->prepareColumnEditValue($column, $row) ?>
+                                            <?php if (!empty($editError)): ?>
+                                                <div class="table-cell-edit-error text-danger small mt-1"><?= htmlspecialchars($editError, ENT_QUOTES) ?></div>
+                                            <?php endif ?>
+                                        </div>
+                                        <button type="button" class="table-cell-edit-trigger btn btn-link btn-sm text-muted p-0" title="Edytuj" aria-label="Edytuj">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                                <path d="M12.854.146a.5.5 0 0 1 .707 0l2.293 2.293a.5.5 0 0 1 0 .707l-9.5 9.5L4 13l.354-2.354 9.5-9.5zM3.5 13.5l2.147-.358L4.358 11.853 4 14l2.147-.358L3.5 13.5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                <?php else: ?>
+                                    <?= $columnValue ?>
+                                <?php endif ?>
                             </td>
                         <?php endforeach ?>
                     </tr>
