@@ -67,16 +67,23 @@ use NimblePHP\Table\Table;
                                 <?php if (!empty($sortColumn) && $sortColumn['key'] == $column->getKey()): ?>
                                     <?php if ($sortColumn['direction'] === 'asc'): ?>
                                         <span class="sort-icon" data-sort="asc">
-                                            <i class="fas fa-sort-down mt-1" style="opacity: 0.4;"></i>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                                <path d="M8 3l4.5 5H3.5L8 3z"/>
+                                            </svg>
                                         </span>
                                     <?php else: ?>
                                         <span class="sort-icon" data-sort="desc">
-                                            <i class="fas fa-sort-up mt-1" style="opacity: 0.4;"></i>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                                <path d="M8 13l-4.5-5h9L8 13z"/>
+                                            </svg>
                                         </span>
                                     <?php endif ?>
                                 <?php else: ?>
                                     <span class="sort-icon" data-sort="none">
-                                        <i class="fas fa-sort mt-1" style="opacity: 0.4;"></i>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                                <path d="M8 2l4 4H4l4-4z"/>
+                                                <path d="M8 14l-4-4h8l-4 4z"/>
+                                            </svg>
                                     </span>
                                 <?php endif ?>
                             <?php endif ?>
