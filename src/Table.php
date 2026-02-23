@@ -9,6 +9,7 @@ use NimblePHP\Framework\Exception\DatabaseException;
 use NimblePHP\Framework\Exception\NimbleException;
 use NimblePHP\Framework\Exception\ValidationException;
 use NimblePHP\Framework\Interfaces\ModelInterface;
+use NimblePHP\Framework\Kernel;
 use NimblePHP\Framework\Module\ModuleRegister;
 use NimblePHP\Framework\Request;
 use NimblePHP\Table\Interfaces\ColumnInterface;
@@ -231,8 +232,8 @@ class Table implements TableInterface
             $this->configTable = new \krzysztofzylka\DatabaseManager\Table('module_table_config');
         }
 
-        $this->request = new Request();
-        $this->cookie = new Cookie();
+        $this->request = Kernel::$serviceContainer->get('kernel.request');
+        $this->cookie = Kernel::$serviceContainer->get('kernel.cookie');
 
         if (!is_null($id)) {
             $this->setId($id, false);
@@ -266,7 +267,7 @@ class Table implements TableInterface
      */
     public function saveConfig(): void
     {
-        if ($this->isAjax()) {
+        if ($this->isAjax() || empty($this->configName)) {
             return;
         }
 
@@ -279,7 +280,7 @@ class Table implements TableInterface
      */
     public function readConfig(): void
     {
-        if ($this->isAjax()) {
+        if ($this->isAjax() || empty($this->configName)) {
             return;
         }
 
