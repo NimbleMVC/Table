@@ -41,7 +41,7 @@ use NimblePHP\Table\Table;
                 <div class="col-12 col-md-auto d-flex justify-content-end">
                     <input class="ajax-form form-control me-2 form-control-sm w-100"
                            type="search" name="search" value="<?= $searchValue ?>"
-                           placeholder="<?= Translation::getInstance()->translate('module.table.search') ?>" aria-label="search"/>
+                           placeholder="<?= Translation::getInstance()->translate('module.table.search') ?>" aria-label="<?= Translation::getInstance()->translate('module.table.search') ?>"/>
                 </div>
             <?php endif ?>
         </div>

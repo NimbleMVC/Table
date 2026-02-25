@@ -6,7 +6,10 @@
       "records": "rekordów",
       "page": "Strona",
       "of": "z",
-      "empty_data": "Brak danych do wyświetlenia"
+      "empty_data": "Brak danych do wyświetlenia",
+      "first": "Pierwsza",
+      "last": "Ostatnia",
+      "edit": "Edytuj"
     }
   }
 }

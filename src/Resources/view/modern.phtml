@@ -96,7 +96,7 @@ use NimblePHP\Table\Table;
             <?php if (empty($data)): ?>
                 <tr>
                     <td colspan="<?= count($columns) ?>" class="text-center py-5" style="color: #718096; font-style: italic;">
-                        Brak danych do wyświetlenia
+                        <?= Translation::getInstance()->translate('module.table.empty_data') ?>
                     </td>
                 </tr>
             <?php else: ?>
@@ -120,7 +120,7 @@ use NimblePHP\Table\Table;
                                                 <div class="table-cell-edit-error text-danger small mt-1"><?= htmlspecialchars($editError, ENT_QUOTES) ?></div>
                                             <?php endif ?>
                                         </div>
-                                        <button type="button" class="table-cell-edit-trigger btn btn-link btn-sm text-muted p-0" title="Edytuj" aria-label="Edytuj">
+                                        <button type="button" class="table-cell-edit-trigger btn btn-link btn-sm text-muted p-0" title="<?= Translation::getInstance()->translate('module.table.edit') ?>" aria-label="<?= Translation::getInstance()->translate('module.table.edit') ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
                                                 <path d="M12.854.146a.5.5 0 0 1 .707 0l2.293 2.293a.5.5 0 0 1 0 .707l-9.5 9.5L4 13l.354-2.354 9.5-9.5zM3.5 13.5l2.147-.358L4.358 11.853 4 14l2.147-.358L3.5 13.5z"/>
                                             </svg>
@@ -156,7 +156,7 @@ use NimblePHP\Table\Table;
                                 <ul class="pagination justify-content-end m-0" style="gap: 5px;">
                                     <?php if ($page > 1): ?>
                                         <li class="page-item">
-                                            <a href="?page=1" class="page-link ajax-link" style="border-radius: 6px; color: #4a5568; font-weight: 600; font-size: 13px; padding: 8px 12px; border: 1px solid #e2e8f0;">&laquo; Pierwsza</a>
+                                            <a href="?page=1" class="page-link ajax-link" style="border-radius: 6px; color: #4a5568; font-weight: 600; font-size: 13px; padding: 8px 12px; border: 1px solid #e2e8f0;">&laquo; <?= Translation::getInstance()->translate('module.table.first') ?></a>
                                         </li>
                                         <li class="page-item">
                                             <a href="?page=<?= $page - 1 ?>" class="page-link ajax-link" style="border-radius: 6px; color: #4a5568; font-weight: 600; font-size: 13px; padding: 8px 12px; border: 1px solid #e2e8f0;">&lsaquo;</a>
@@ -175,7 +175,7 @@ use NimblePHP\Table\Table;
                                             <a href="?page=<?= $page + 1 ?>" class="page-link ajax-link" style="border-radius: 6px; color: #4a5568; font-weight: 600; font-size: 13px; padding: 8px 12px; border: 1px solid #e2e8f0;">&rsaquo;</a>
                                         </li>
                                         <li class="page-item">
-                                            <a href="?page=<?= $pageCount ?>" class="page-link ajax-link" style="border-radius: 6px; color: #4a5568; font-weight: 600; font-size: 13px; padding: 8px 12px; border: 1px solid #e2e8f0;">Ostatnia &raquo;</a>
+                                            <a href="?page=<?= $pageCount ?>" class="page-link ajax-link" style="border-radius: 6px; color: #4a5568; font-weight: 600; font-size: 13px; padding: 8px 12px; border: 1px solid #e2e8f0;"><?= Translation::getInstance()->translate('module.table.last') ?> &raquo;</a>
                                         </li>
                                     <?php endif ?>
                                 </ul>

@@ -6,7 +6,10 @@
       "records": "records",
       "page": "Page",
       "of": "of",
-      "empty_data": "No data to display"
+      "empty_data": "No data to display",
+      "first": "First",
+      "last": "Last",
+      "edit": "Edit"
     }
   }
 }
