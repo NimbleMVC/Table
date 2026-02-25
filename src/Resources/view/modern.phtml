@@ -29,10 +29,23 @@ use NimblePHP\Table\Table;
                 <?php if (!empty($actions)): ?>
                     <div class="action-div col-12 col-md-auto mb-3 mb-md-0">
                         <?php foreach ($actions as $action): ?>
-                            <a href="<?= $action['url'] ?>" class="btn btn-sm btn-primary me-2<?= !empty($action['class']) ? ' ' . $action['class'] : ' btn-primary' ?>"
-                               style="border-radius: 6px; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; padding: 8px 16px; transition: all 0.2s ease-in-out; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
-                                <?= $action['name'] ?>
-                            </a>
+                            <?php if ($action['type'] === 'link'): ?>
+                                <a href="<?= $action['url'] ?>" class="btn btn-sm btn-primary me-2<?= !empty($action['class']) ? ' ' . $action['class'] : ' btn-primary' ?>"
+                                   style="border-radius: 6px; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; padding: 8px 16px; transition: all 0.2s ease-in-out; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+                                    <?= $action['name'] ?>
+                                </a>
+                            <?php elseif ($action['type'] === 'select'): ?>
+                                <span class="dropdown me-2">
+                                    <button style="border-radius: 6px; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; padding: 8px 16px; transition: all 0.2s ease-in-out; box-shadow: 0 2px 5px rgba(0,0,0,0.08);" class="btn btn-sm btn-primary dropdown-toggle<?= !empty($action['class']) ? ' ' . $action['class'] : '' ?>" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <?= $action['name'] ?>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <?php foreach ($action['actions'] as $selectAction): ?>
+                                            <li><a class="dropdown-item <?= !empty($selectAction['class']) ? ' ' . $selectAction['class'] : '' ?>" href="<?= $selectAction['url'] ?>"><?= $selectAction['name'] ?></a></li>
+                                        <?php endforeach ?>
+                                    </ul>
+                                </span>
+                            <?php endif ?>
                         <?php endforeach ?>
                     </div>
                 <?php endif ?>

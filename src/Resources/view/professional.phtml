@@ -30,9 +30,22 @@ use NimblePHP\Table\Table;
                 <?php if (!empty($actions)): ?>
                     <div class="action-div pt-1 col-12 col-md-auto mb-2 mb-md-0">
                         <?php foreach ($actions as $action): ?>
-                            <a href="<?= $action['url'] ?>" class="btn btn-sm btn-primary me-2<?= !empty($action['class']) ? ' ' . $action['class'] : '' ?>" style="border-radius: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s ease-in-out;">
-                                <?= $action['name'] ?>
-                            </a>
+                            <?php if ($action['type'] === 'link'): ?>
+                                <a href="<?= $action['url'] ?>" class="btn btn-sm btn-primary me-2<?= !empty($action['class']) ? ' ' . $action['class'] : '' ?>" style="border-radius: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s ease-in-out;">
+                                    <?= $action['name'] ?>
+                                </a>
+                            <?php elseif ($action['type'] === 'select'): ?>
+                                <span class="dropdown me-2">
+                                    <button style="border-radius: 4px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s ease-in-out;" class="btn btn-sm btn-primary dropdown-toggle<?= !empty($action['class']) ? ' ' . $action['class'] : '' ?>" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <?= $action['name'] ?>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <?php foreach ($action['actions'] as $selectAction): ?>
+                                            <li><a class="dropdown-item <?= !empty($selectAction['class']) ? ' ' . $selectAction['class'] : '' ?>" href="<?= $selectAction['url'] ?>"><?= $selectAction['name'] ?></a></li>
+                                        <?php endforeach ?>
+                                    </ul>
+                                </span>
+                            <?php endif ?>
                         <?php endforeach ?>
                     </div>
                 <?php endif ?>
