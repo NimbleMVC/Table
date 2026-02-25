@@ -4,6 +4,7 @@ namespace NimblePHP\Table;
 
 use krzysztofzylka\DatabaseManager\Condition;
 use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
+use Krzysztofzylka\Generator\Generator;
 use NimblePHP\Framework\Cookie;
 use NimblePHP\Framework\Exception\DatabaseException;
 use NimblePHP\Framework\Exception\NimbleException;
@@ -932,7 +933,39 @@ class Table implements TableInterface
         $this->actions[] = [
             'name' => $name,
             'url' => $url,
-            'class' => $class
+            'class' => $class,
+            'type' => 'link'
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Add action
+     * @param string $name
+     * @param string $url
+     * @param string $class
+     * @return $this
+     */
+    public function addSelectAction(string $name, array $actions, string $class = ''): self
+    {
+        if ($ajaxAction) {
+            $class .= ' ajax-action-button';
+        }
+
+        $actionData = [];
+
+        for ($x=0; $x < count($actions); $x++) {
+            $actionData[] = $this->actions[array_key_last($this->actions)];
+            unset($this->actions[array_key_last($this->actions)]);
+        }
+
+        $this->actions[] = [
+            'select_key' => $selectKey,
+            'name' => $name,
+            'actions' => $actionData,
+            'class' => $class,
+            'type' => 'select'
         ];
 
         return $this;
