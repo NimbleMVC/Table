@@ -1,6 +1,6 @@
 (function ($) {
     const settings = {
-        debug: true
+        debug: false
     };
 
     const methods = {
