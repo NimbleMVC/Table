@@ -4,6 +4,7 @@ namespace NimblePHP\Table\Template;
 
 use NimblePHP\Framework\Exception\DatabaseException;
 use NimblePHP\Framework\Exception\NotFoundException;
+use NimblePHP\Framework\Log;
 use NimblePHP\Framework\Request;
 use NimblePHP\Table\Table;
 
@@ -50,27 +51,39 @@ class Template
     {
         $view = new View();
 
-        return $view->renderViewString(
-            $this->templateName,
-            [
-                'tableId' => $this->tableInstance->getId(),
-                'currentUrl' => '/' . $this->currentUrl,
-                'tableClasses' => trim($this->tableInstance->getClass()),
-                'isAjax' => $this->tableInstance->isAjax(),
-                'actions' => $this->tableInstance->getActions(),
-                'searchValue' => $this->tableInstance->getSearch(),
-                'columns' => $this->tableInstance->getColumns(),
-                'filters' => $this->tableInstance->getFilters(),
-                'data' => $this->tableInstance->getData(),
-                'tableInstance' => $this->tableInstance,
-                'pageCount' => $this->tableInstance->getPageCount(),
-                'page' => $this->tableInstance->getPage(),
-                'isSortable' => $this->tableInstance->isSortable(),
-                'paginationStart' => max(1, $this->tableInstance->getPage() - 3),
-                'paginationEnd' => min($this->tableInstance->getPageCount(), $this->tableInstance->getPage() + 3),
-                'sortColumn' => $this->tableInstance->getSortColumn()
-            ]
-        );
+        try {
+            return $view->renderViewString(
+                $this->templateName,
+                [
+                    'tableId' => $this->tableInstance->getId(),
+                    'currentUrl' => '/' . $this->currentUrl,
+                    'tableClasses' => trim($this->tableInstance->getClass()),
+                    'isAjax' => $this->tableInstance->isAjax(),
+                    'actions' => $this->tableInstance->getActions(),
+                    'searchValue' => $this->tableInstance->getSearch(),
+                    'columns' => $this->tableInstance->getColumns(),
+                    'filters' => $this->tableInstance->getFilters(),
+                    'data' => $this->tableInstance->getData(),
+                    'tableInstance' => $this->tableInstance,
+                    'pageCount' => $this->tableInstance->getPageCount(),
+                    'page' => $this->tableInstance->getPage(),
+                    'isSortable' => $this->tableInstance->isSortable(),
+                    'paginationStart' => max(1, $this->tableInstance->getPage() - 3),
+                    'paginationEnd' => min($this->tableInstance->getPageCount(), $this->tableInstance->getPage() + 3),
+                    'sortColumn' => $this->tableInstance->getSortColumn()
+                ]
+            );
+        } catch (\Throwable $e) {
+            Log::log('Failed generate table template', 'FATAL_ERR', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
+            $this->templateName = 'error';
+
+            $this->tableInstance->resetConfig();
+
+            return $view->renderViewString(
+                $this->templateName,
+            );
+        }
     }
 
 }

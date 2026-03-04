@@ -57,6 +57,12 @@ class Column implements ColumnInterface
     protected mixed $onUpdate = null;
 
     /**
+     * Addional sort columns
+     * @var array
+     */
+    protected array $additionalSortColumns = [];
+
+    /**
      * Create column
      * @param string $key
      * @param string|null $name
@@ -278,6 +284,28 @@ class Column implements ColumnInterface
     public function hasOnUpdate(): bool
     {
         return is_callable($this->onUpdate);
+    }
+
+    /**
+     * Set additional sort column
+     * @param string ...$columns
+     * @return void
+     */
+    public function setAdditionalSortColumn(string ...$columns): ColumnInterface
+    {
+        $this->additionalSortColumns = $columns;
+
+        return $this;
+    }
+
+    /**
+     * Get additional sort column
+     * @param string ...$columns
+     * @return void
+     */
+    public function getAdditionalSortColumn(): array
+    {
+        return $this->additionalSortColumns;
     }
 
     /**
