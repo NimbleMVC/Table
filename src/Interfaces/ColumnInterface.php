@@ -150,5 +150,18 @@ interface ColumnInterface
      */
     public function hasOnUpdate(): bool;
 
+    /**
+     * Set additional sort column
+     * @param string ...$columns
+     * @return void
+     */
+    public function setAdditionalSortColumn(string ...$columns): ColumnInterface;
+
+    /**
+     * Get additional sort column
+     * @param string ...$columns
+     * @return void
+     */
+    public function getAdditionalSortColumn(): array;
 
 }

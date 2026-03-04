@@ -276,6 +276,16 @@ class Table implements TableInterface
     }
 
     /**
+     * Save config
+     * @return void
+     */
+    public function resetConfig(): void
+    {
+        $this->config = [];
+        $this->saveAjaxConfig();
+    }
+
+    /**
      * Set config
      * @return void
      */
@@ -461,8 +471,6 @@ class Table implements TableInterface
 
         if ($isSaveAjaxMode) {
             ob_clean();
-            echo $template->render();
-            exit;
         }
 
         return $template->render();
@@ -534,12 +542,42 @@ class Table implements TableInterface
                 ];
             }
 
+            if (isset($this->columns[$sortColumn]) && $this->columns[$sortColumn] instanceof ColumnInterface) {
+                $additionalSorts = $this->columns[$sortColumn]->getAdditionalSortColumn();
+
+                if (!empty($additionalSorts)) {
+                    $sortColumnData = [$sortColumnData];
+
+                    foreach ($additionalSorts as $additionalSort) {
+                        $explodeAdditionalSort = explode(' ', $additionalSort);
+                        $sortColumnData[] = [
+                            'key' => $explodeAdditionalSort[0],
+                            'direction' => $explodeAdditionalSort[1] ?? 'asc'
+                        ];
+                    }
+                }
+            }
+
             $this->setSortColumn($sortColumnData);
 
             if (empty($sortColumnData)) {
                 $this->setOrderBy($this->baseOrderBy);
             } else {
-                $this->setOrderBy(htmlspecialchars($sortColumnData['key'] . ' ' . $sortColumnData['direction']));
+                if (is_integer(array_key_first($sortColumnData))) {
+                    $stringOrderBy = '';
+
+                    foreach ($sortColumnData as $orderByData) {
+                        if (!empty($stringOrderBy)) {
+                            $stringOrderBy .= ', ';
+                        }
+
+                        $stringOrderBy .= htmlspecialchars($orderByData['key'] . ' ' . $orderByData['direction']);
+                    }
+
+                    $this->setOrderBy($stringOrderBy);
+                } else {
+                    $this->setOrderBy(htmlspecialchars($sortColumnData['key'] . ' ' . $sortColumnData['direction']));
+                }
             }
         }
 
@@ -615,8 +653,23 @@ class Table implements TableInterface
             }
 
             if (!empty($config['sortColumn'])) {
-                $this->setSortColumn($config['sortColumn']);
-                $this->setOrderBy(htmlspecialchars($config['sortColumn']['key'] . ' ' . $config['sortColumn']['direction']));
+                if (is_integer(array_key_first($config['sortColumn']))) {
+                    $stringOrderBy = '';
+
+                    foreach ($config['sortColumn'] as $orderByData) {
+                        if (!empty($stringOrderBy)) {
+                            $stringOrderBy .= ', ';
+                        }
+
+                        $stringOrderBy .= htmlspecialchars($orderByData['key'] . ' ' . $orderByData['direction']);
+                    }
+
+                    $this->setSortColumn($config['sortColumn'][0]);
+                    $this->setOrderBy($stringOrderBy);
+                } else {
+                    $this->setSortColumn($config['sortColumn']);
+                    $this->setOrderBy(htmlspecialchars($config['sortColumn']['key'] . ' ' . $config['sortColumn']['direction']));
+                }
             } elseif (empty($config['sortColumn']) && !empty($this->baseOrderBy)) {
                 $this->setsortColumn([]);
                 $this->setOrderBy($this->baseOrderBy);
@@ -945,9 +998,10 @@ class Table implements TableInterface
      * @param string $name
      * @param string $url
      * @param string $class
+     * @param bool $ajaxAction
      * @return $this
      */
-    public function addSelectAction(string $name, array $actions, string $class = ''): self
+    public function addSelectAction(string $name, array $actions, string $class = '', bool $ajaxAction = false): self
     {
         if ($ajaxAction) {
             $class .= ' ajax-action-button';
@@ -961,7 +1015,7 @@ class Table implements TableInterface
         }
 
         $this->actions[] = [
-            'select_key' => $selectKey,
+            'select_key' => null,
             'name' => $name,
             'actions' => $actionData,
             'class' => $class,
