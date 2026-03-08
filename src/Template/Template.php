@@ -50,7 +50,6 @@ class Template
     public function render(): string
     {
         $view = $this->getViewInstance();
-        $view->setViewPath(__DIR__ . '/../Resources/view/');
 
         ob_start();
         $view->render(
@@ -79,7 +78,10 @@ class Template
 
     public function getViewInstance(): ViewInterface
     {
-        return new \NimblePHP\Framework\View();
+        $view = new \NimblePHP\Framework\View();
+        $view->setViewPath(__DIR__ . '/../Resources/view/');
+
+        return $view;
     }
 
 }
