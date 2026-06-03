@@ -4,7 +4,6 @@ namespace NimblePHP\Table;
 
 use krzysztofzylka\DatabaseManager\Condition;
 use krzysztofzylka\DatabaseManager\Exception\DatabaseManagerException;
-use Krzysztofzylka\Generator\Generator;
 use NimblePHP\Framework\Cookie;
 use NimblePHP\Framework\Exception\DatabaseException;
 use NimblePHP\Framework\Exception\NimbleException;
@@ -952,12 +951,15 @@ class Table implements TableInterface
     /**
      * Add action
      * @param string $name
-     * @param string $url
+     * @param array $actions
      * @param string $class
+     * @param bool $ajaxAction
      * @return $this
      */
-    public function addSelectAction(string $name, array $actions, string $class = ''): self
+    public function addSelectAction(string $name, array $actions, string $class = '', bool $ajaxAction = false): self
     {
+        $selectKey = uniqid('select_');
+
         if ($ajaxAction) {
             $class .= ' ajax-action-button';
         }
