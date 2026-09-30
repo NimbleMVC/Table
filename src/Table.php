@@ -531,24 +531,12 @@ class Table implements TableInterface
             $sort = $this->request->getPost('sort_column_direction');
 
             if ($sort === 'none') {
-                $sortColumnData = [
-                    'key' => $sortColumn,
-                    'direction' => 'asc'
-                ];
+                $sortColumnData = $this->prepareSortColumn($sortColumn, 'asc');
             } elseif ($sort === 'asc') {
-                $sortColumnData = [
-                    'key' => $sortColumn,
-                    'direction' => 'desc'
-                ];
+                $sortColumnData = $this->prepareSortColumn($sortColumn, 'desc');
             }
 
-            $this->setSortColumn($sortColumnData);
-
-            if (empty($sortColumnData)) {
-                $this->setOrderBy($this->baseOrderBy);
-            } else {
-                $this->setOrderBy(htmlspecialchars($sortColumnData['key'] . ' ' . $sortColumnData['direction']));
-            }
+            $this->applySortColumn($sortColumnData);
         }
 
         $config = [
@@ -607,11 +595,6 @@ class Table implements TableInterface
 
             $this->setPage($config['page']);
             $this->setSearch($config['search']);
-
-            if (!is_null($config['orderBy'])) {
-                $this->setOrderBy($config['orderBy']);
-            }
-
             $this->setLimit($config['limit']);
 
             foreach ($config['filters'] ?? [] as $filterKey => $value) {
@@ -622,13 +605,40 @@ class Table implements TableInterface
                 }
             }
 
-            if (!empty($config['sortColumn'])) {
-                $this->setSortColumn($config['sortColumn']);
-                $this->setOrderBy(htmlspecialchars($config['sortColumn']['key'] . ' ' . $config['sortColumn']['direction']));
-            } elseif (empty($config['sortColumn']) && !empty($this->baseOrderBy)) {
-                $this->setsortColumn([]);
-                $this->setOrderBy($this->baseOrderBy);
-            }
+            $sortColumnData = is_array($config['sortColumn'] ?? null)
+                ? $this->prepareSortColumn($config['sortColumn']['key'] ?? null, $config['sortColumn']['direction'] ?? null)
+                : [];
+
+            $this->applySortColumn($sortColumnData);
+        }
+    }
+
+    protected function prepareSortColumn(mixed $key, mixed $direction): array
+    {
+        if (!$this->isSortable() || !is_string($key) || !in_array($direction, ['asc', 'desc'], true)) {
+            return [];
+        }
+
+        $column = $this->columns[$key] ?? null;
+
+        if (!$column instanceof ColumnInterface || !$column->isSortable()) {
+            return [];
+        }
+
+        return [
+            'key' => $column->getKey(),
+            'direction' => $direction
+        ];
+    }
+
+    protected function applySortColumn(array $sortColumnData): void
+    {
+        $this->setSortColumn($sortColumnData);
+
+        if (empty($sortColumnData)) {
+            $this->setOrderBy($this->baseOrderBy);
+        } else {
+            $this->setOrderBy($sortColumnData['key'] . ' ' . $sortColumnData['direction']);
         }
     }
 
