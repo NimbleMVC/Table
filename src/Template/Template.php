@@ -38,7 +38,7 @@ class Template
     {
         $this->tableInstance = $tableInstance;
         $this->templateName = $templateName;
-        $this->currentUrl = (new Request())->getQuery('url');
+        $this->currentUrl = ltrim((string)(new Request())->getQuery('url'), "/\\\x00..\x20");
     }
 
     /**
