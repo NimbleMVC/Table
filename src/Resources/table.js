@@ -163,6 +163,14 @@
                 url = dataurl;
             }
 
+            url = new URL(url, window.location.href);
+
+            if (url.origin !== window.location.origin) {
+                console.error('Table error: cross-origin url', url.href);
+
+                return Promise.resolve();
+            }
+
             return fetch(url, {
                 method: 'POST',
                 body: formData
