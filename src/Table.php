@@ -1115,10 +1115,10 @@ class Table implements TableInterface
             return;
         }
 
-        $value = $this->request->getPost('table_edit_value', null, false);
+        $value = $this->request->getPost('table_edit_value');
 
         if (is_null($value)) {
-            foreach ($this->request->getAllPost(false) as $postKey => $postValue) {
+            foreach ($this->request->getAllPost() as $postKey => $postValue) {
                 if (in_array($postKey, ['table_action_id', 'table_edit_column', 'table_edit_id', 'table_edit_value'], true)) {
                     continue;
                 }
