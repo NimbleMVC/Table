@@ -413,7 +413,8 @@ class Table implements TableInterface
     public function render(): string
     {
         $isSaveAjaxMode = $this->isAjax()
-            && $this->request->getPost('table_action_id', false) === $this->getId();
+            && $this->request->getPost('table_action_id', false) === $this->getId()
+            && $this->isSameOriginRequest();
         $this->baseOrderBy = $this->getOrderBy();
 
         /**
@@ -1089,6 +1090,35 @@ class Table implements TableInterface
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    /**
+     * Check that the request was sent from the same origin
+     * @return bool
+     */
+    protected function isSameOriginRequest(): bool
+    {
+        $fetchSite = $this->request->getHeader('Sec-Fetch-Site');
+
+        if (!is_null($fetchSite)) {
+            return $fetchSite === 'same-origin';
+        }
+
+        $origin = $this->request->getHeader('Origin');
+
+        if (is_null($origin)) {
+            return true;
+        }
+
+        $originHost = parse_url($origin, PHP_URL_HOST);
+        $originPort = parse_url($origin, PHP_URL_PORT);
+
+        if (!is_string($originHost)) {
+            return false;
+        }
+
+        return strtolower($originHost . ($originPort ? ':' . $originPort : ''))
+            === strtolower((string)$this->request->getServer('HTTP_HOST', ''));
     }
 
     /**
